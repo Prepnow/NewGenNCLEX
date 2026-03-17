@@ -7,18 +7,46 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --navy: #0f2744;
+      --navy-light: #1a3a5c;
+      --teal: #0d7377;
+      --teal-light: #14a3a8;
+      --amber: #c97d1a;
+      --amber-light: #f0a030;
+      --slate: #f4f6f9;
+      --white: #ffffff;
+      --border: #dde3ec;
+      --text-primary: #0f2744;
+      --text-secondary: #4a5a72;
+      --text-muted: #8294a8;
+      --danger: #b91c1c;
+      --success: #166534;
+      --warn: #92400e;
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 0; background: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    body { margin: 0; padding: 0; background: var(--slate); font-family: 'Karla', sans-serif; color: var(--text-primary); }
+    h1, h2, h3 { font-family: 'Libre Baskerville', serif; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #eef1f6; }
+    ::-webkit-scrollbar-thumb { background: #b8c4d4; border-radius: 3px; }
+    button { font-family: 'Karla', sans-serif; }
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const { useState } = React;
+
+// ─── API KEY CONFIG ───────────────────────────────────────────────────────────
+// Paste your Anthropic API key here so users don't need to enter it manually.
+// Leave as empty string "" to prompt users for their own key.
+const HARDCODED_API_KEY = "sk-ant-api03-o3d...agAA";
+// ─────────────────────────────────────────────────────────────────────────────
 
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -542,7 +570,7 @@ const PRACTICE_TEST_QUESTIONS = [
 const STRATEGY_CONTENT = [
   {
     title: "The NCLEX Decision Tree",
-    icon: "🌳",
+    icon: "",
     content: `When answering ANY NCLEX question, follow this hierarchy:
     
 1. Is this an ABCs question? (Airway, Breathing, Circulation) → Prioritize in that order
@@ -554,7 +582,7 @@ const STRATEGY_CONTENT = [
   },
   {
     title: "The S.A.T.A. Master Strategy",
-    icon: "☑️",
+    icon: "",
     content: `Select All That Apply – treat each option as TRUE or FALSE independently.
 
 HACK: Cover the other options. Ask: "Is this option ALWAYS true for this condition?"
@@ -567,7 +595,7 @@ HACK: Cover the other options. Ask: "Is this option ALWAYS true for this conditi
   },
   {
     title: "NGN Clinical Judgment Strategy",
-    icon: "🧠",
+    icon: "6",
     content: `Next Generation NCLEX (NGN) uses 6-step Clinical Judgment Model:
 
 1. RECOGNIZE CUES → What data is abnormal? What matters?
@@ -582,7 +610,7 @@ NGN Question Types: Bow-tie (causes/actions/outcomes), Matrix (multiple conditio
   },
   {
     title: "California BRN Fast-Track",
-    icon: "🌅",
+    icon: "",
     content: `California Board of Registered Nursing (BRN) Requirements:
 
 1. Apply at BRN website (breeze.ca.gov)
@@ -598,7 +626,7 @@ TIMELINE: Application to ATT typically 3-8 weeks in CA. Process can be expedited
   },
   {
     title: "Lab Values Cheat Sheet",
-    icon: "🧪",
+    icon: "",
     content: `CRITICAL LAB VALUES TO MEMORIZE:
 
 Sodium (Na+): 135-145 | <120 or >155 = critical
@@ -615,7 +643,7 @@ pH: 7.35-7.45 | PaCO2: 35-45 | HCO3: 22-26`,
   },
   {
     title: "Test-Day Execution Plan",
-    icon: "🎯",
+    icon: "20+",
     content: `EXAM DAY STRATEGIES:
 
 BEFORE: Sleep 8 hours. Eat protein breakfast. Arrive 30 min early.
@@ -656,7 +684,7 @@ const WEEKLY_PLAN = {
 };
 
 const NGNTIPS = [
-  { type: "Bow-Tie Questions", desc: "Central condition with causes on left and nursing actions/outcomes on right. Think: What caused this? What do I do? What should happen?", color: "#0891b2" },
+  { icon: "BT", type: "Bow-Tie Questions", desc: "Central condition with causes on left and nursing actions/outcomes on right. Think: What caused this? What do I do? What should happen?", color: "#0891b2" },
   { type: "Matrix/Grid", desc: "Multiple clients or conditions with multiple interventions. Evaluate each cell independently. Look for patterns in abnormal findings.", color: "#7c3aed" },
   { type: "Trend Questions", desc: "Serial vital signs or lab values over time. Identify the trajectory – is the client improving or deteriorating? What changed?", color: "#dc2626" },
   { type: "Extended Drag-and-Drop", desc: "Put items in order of priority or match items to categories. Use nursing process and priority frameworks (ABCs, Maslow).", color: "#b45309" },
@@ -718,22 +746,21 @@ function NCLEXPrep() {
   const HomeTab = () => (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       {/* Hero */}
-      <div style={{ background: "linear-gradient(135deg, #0c4a6e 0%, #0891b2 60%, #06b6d4 100%)", borderRadius: 20, padding: "40px 36px", marginBottom: 28, color: "#fff", position: "relative", overflow: "hidden" }}>
+      <div style={{ background: "linear-gradient(150deg, #0f2744 0%, #1a3a5c 70%, #0d5c6e 100%)", borderRadius: 8, padding: "40px 40px", marginBottom: 28, color: "#fff", position: "relative", overflow: "hidden", borderLeft: "4px solid #c97d1a" }}>
         <div style={{ position: "absolute", right: -30, top: -30, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
         <div style={{ position: "absolute", right: 60, bottom: -60, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
-          <span style={{ fontSize: 40 }}>🏥</span>
+        <div style={{ marginBottom: 12 }}>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, opacity: 0.7, textTransform: "uppercase" }}>California NCLEX Prep</div>
-            <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, lineHeight: 1.1 }}>Pass NCLEX-RN Fast</h1>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, opacity: 0.6, textTransform: "uppercase", marginBottom: 4 }}>California NCLEX Prep</div>
+            <h1 style={{ margin: 0, fontSize: 34, fontWeight: 700, lineHeight: 1.15, fontFamily: "'Libre Baskerville', serif" }}>Pass NCLEX-RN Fast</h1>
           </div>
         </div>
         <p style={{ margin: "0 0 24px", opacity: 0.9, fontSize: 16, maxWidth: 520, lineHeight: 1.6 }}>
           Next Generation NCLEX (NGN) prep with diagnostics, practice tests, clinical judgment strategies, and a personalized weekly study plan.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-          {[["📋 Diagnostic Test", "diag"], ["📝 Practice Tests", "practice"], ["🎯 Strategies", "strategy"], ["📅 Study Plan", "plan"], ["🌅 California Guide", "california"], ["🧠 NGN Guide", "ngn"]].map(([label, t]) => (
-            <button key={t} onClick={() => setTab(t)} style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: 10, padding: "10px 18px", cursor: "pointer", fontWeight: 600, fontSize: 14, backdropFilter: "blur(4px)", transition: "all 0.2s" }}>
+          {[["Diagnostic Test", "diag"], ["Practice Tests", "practice"], ["Strategies", "strategy"], ["Study Plan", "plan"], ["California Guide", "california"], ["NGN Guide", "ngn"]].map(([label, t]) => (
+            <button key={t} onClick={() => setTab(t)} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.35)", color: "rgba(255,255,255,0.9)", borderRadius: 4, padding: "8px 16px", cursor: "pointer", fontWeight: 600, fontSize: 12, letterSpacing: "0.05em", textTransform: "uppercase", transition: "all 0.2s", fontFamily: "'Karla', sans-serif" }}>
               {label}
             </button>
           ))}
@@ -743,22 +770,21 @@ function NCLEXPrep() {
       {/* Stats Row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
         {[
-          { label: "Practice Questions", value: "150+", icon: "❓", color: "#0891b2" },
-          { label: "NCLEX Categories", value: "8", icon: "📚", color: "#7c3aed" },
-          { label: "Study Strategies", value: "20+", icon: "🎯", color: "#dc2626" },
-          { label: "NGN Question Types", value: "6", icon: "🧠", color: "#b45309" }
+          { label: "Practice Questions", value: "150+", color: "#0f2744" },
+          { label: "NCLEX Categories", value: "8", color: "#0d7377" },
+          { label: "Study Strategies", value: "20+", color: "#b91c1c" },
+          { label: "NGN Question Types", value: "6", color: "#c97d1a" }
         ].map(s => (
-          <div key={s.label} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: "18px 16px", textAlign: "center", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
-            <div style={{ fontSize: 28, marginBottom: 6 }}>{s.icon}</div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>{s.label}</div>
+          <div key={s.label} style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: "20px 16px", textAlign: "center", boxShadow: "0 1px 4px rgba(15,39,68,0.07)", borderTop: `3px solid ${s.color}` }}>
+            <div style={{ fontSize: 30, fontWeight: 800, color: s.color, fontFamily: "'Libre Baskerville', serif", lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 12, color: "#4a5a72", fontWeight: 600, marginTop: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Category Overview */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 24 }}>
-        <h2 style={{ margin: "0 0 18px", fontSize: 18, fontWeight: 700, color: "#111827" }}>📊 NCLEX Client Needs Categories</h2>
+      <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 24 }}>
+        <h2 style={{ margin: "0 0 18px", fontSize: 18, fontWeight: 700, color: "#0f2744", fontFamily: "'Libre Baskerville', serif" }}>NCLEX Client Needs Categories</h2>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           {CATEGORIES.map(c => (
             <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "#f9fafb", borderRadius: 10, border: `1px solid ${c.color}22` }}>
@@ -774,8 +800,8 @@ function NCLEXPrep() {
       </div>
 
       {/* Quick Start */}
-      <div style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", border: "1px solid #f59e0b44", borderRadius: 16, padding: 22 }}>
-        <h3 style={{ margin: "0 0 10px", color: "#92400e", fontWeight: 700 }}>⚡ Quick Start Guide</h3>
+      <div style={{ background: "#fffbf0", border: "1px solid #e8c97a", borderRadius: 8, padding: 22, borderLeft: "3px solid #c97d1a" }}>
+        <h3 style={{ margin: "0 0 10px", color: "#92400e", fontWeight: 700 }}>Quick Start Guide</h3>
         <ol style={{ margin: 0, paddingLeft: 20, color: "#78350f", lineHeight: 2 }}>
           <li><strong>Take the Diagnostic Test</strong> → Identifies your weakest categories</li>
           <li><strong>Get your Personalized Study Plan</strong> → Week-by-week roadmap</li>
@@ -800,8 +826,8 @@ function NCLEXPrep() {
 
       return (
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 32, marginBottom: 20 }}>
-            <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}>🎯 Diagnostic Results</h2>
+          <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 32, marginBottom: 20 }}>
+            <h2 style={{ margin: "0 0 6px", fontSize: 22, fontWeight: 700, fontFamily: "'Libre Baskerville', serif", color: "#0f2744" }}>Diagnostic Results</h2>
             <p style={{ color: "#6b7280", margin: "0 0 24px" }}>Here's your personalized analysis. Use this to guide your study plan.</p>
             
             <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 28, padding: "20px 24px", background: "#f9fafb", borderRadius: 14 }}>
@@ -812,7 +838,7 @@ function NCLEXPrep() {
               <div style={{ flex: 1 }}>
                 <ProgressBar value={totalCorrect} max={totalQ} color={overallColor} />
                 <div style={{ marginTop: 10, fontSize: 14, color: "#374151" }}>
-                  {pct >= 70 ? "✅ Good foundation! Focus on weaker areas." : pct >= 50 ? "⚠️ Needs work – prioritize weak categories." : "🚨 Intensive review needed across all areas."}
+                  {pct >= 70 ? "✓ Good foundation! Focus on weaker areas." : pct >= 50 ? "Note: Needs work – prioritize weak categories." : "Alert: Intensive review needed across all areas."}
                 </div>
               </div>
             </div>
@@ -835,8 +861,8 @@ function NCLEXPrep() {
             </div>
 
             {weakArea && (
-              <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 12, padding: 16, marginBottom: 16 }}>
-                <div style={{ fontWeight: 700, color: "#dc2626", marginBottom: 4 }}>🎯 Priority Focus Area</div>
+              <div style={{ background: "#fef2f2", border: "none", borderLeft: "3px solid #b91c1c", borderRadius: "0 6px 6px 0", padding: 16, marginBottom: 16 }}>
+                <div style={{ fontWeight: 700, color: "#dc2626", marginBottom: 4 }}>Priority Focus Area</div>
                 <div style={{ color: "#7f1d1d" }}>
                   Your weakest area is <strong>{CATEGORIES.find(c => c.id === weakArea)?.label}</strong>. Your personalized study plan has been updated to prioritize this.
                 </div>
@@ -844,8 +870,8 @@ function NCLEXPrep() {
             )}
 
             <div style={{ display: "flex", gap: 12 }}>
-              <button onClick={() => setTab("plan")} style={{ flex: 1, background: "#0891b2", color: "#fff", border: "none", borderRadius: 10, padding: "14px", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
-                📅 View My Study Plan
+              <button onClick={() => setTab("plan")} style={{ flex: 1, background: "#0f2744", color: "#fff", border: "none", borderRadius: 6, padding: "14px", fontWeight: 700, cursor: "pointer", fontSize: 14, letterSpacing: "0.04em" }}>
+                View My Study Plan
               </button>
               <button onClick={() => setDiagnosisState({ started: false, qIndex: 0, answers: {}, done: false, scores: {} })} style={{ background: "#f3f4f6", color: "#374151", border: "1px solid #e5e7eb", borderRadius: 10, padding: "14px 20px", fontWeight: 600, cursor: "pointer" }}>
                 Retake
@@ -854,8 +880,8 @@ function NCLEXPrep() {
           </div>
 
           {/* Answer Review */}
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 24 }}>
-            <h3 style={{ margin: "0 0 18px", fontSize: 17, fontWeight: 700 }}>📖 Answer Review & Rationales</h3>
+          <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24 }}>
+            <h3 style={{ margin: "0 0 18px", fontSize: 17, fontWeight: 700 }}>Answer Review & Rationales</h3>
             {DIAGNOSTIC_QUESTIONS.map((q, i) => {
               const userAns = answers[q.id];
               const isCorrect = userAns === q.correct;
@@ -863,7 +889,7 @@ function NCLEXPrep() {
                 <div key={q.id} style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 18, marginBottom: 18 }}>
                   <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
                     <span style={{ fontWeight: 700, color: "#6b7280", fontSize: 13 }}>Q{i + 1}</span>
-                    <span style={{ fontSize: 12 }}>{isCorrect ? "✅" : "❌"}</span>
+                    <span style={{ fontSize: 12 }}>{isCorrect ? "✓" : "✗"}</span>
                     <Badge color={CATEGORIES.find(c => c.id === q.cat)?.color}>{CATEGORIES.find(c => c.id === q.cat)?.label}</Badge>
                   </div>
                   <p style={{ margin: "0 0 10px", fontSize: 14, color: "#374151", fontWeight: 500 }}>{q.stem}</p>
@@ -875,11 +901,11 @@ function NCLEXPrep() {
                   <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 8 }}>
                     Correct: <span style={{ color: "#166534", fontWeight: 600 }}>{q.options[q.correct]}</span>
                   </div>
-                  <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#166534", lineHeight: 1.6 }}>
-                    <strong>💡 Rationale:</strong> {q.rationale}
+                  <div style={{ background: "#f0fdf4", border: "none", borderLeft: "3px solid #166534", borderRadius: "0 6px 6px 0", padding: "10px 14px", fontSize: 13, color: "#166534", lineHeight: 1.6 }}>
+                    <strong>Rationale:</strong> {q.rationale}
                   </div>
-                  <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "8px 14px", marginTop: 8, fontSize: 12, color: "#1e40af" }}>
-                    <strong>🎯 Strategy:</strong> {q.strategy}
+                  <div style={{ background: "#eff6ff", border: "none", borderLeft: "3px solid #1e40af", borderRadius: "0 6px 6px 0", padding: "8px 14px", marginTop: 8, fontSize: 12, color: "#1e40af" }}>
+                    <strong>Strategy:</strong> {q.strategy}
                   </div>
                 </div>
               );
@@ -892,14 +918,14 @@ function NCLEXPrep() {
     if (!started) {
       return (
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 36, textAlign: "center" }}>
-            <div style={{ fontSize: 60, marginBottom: 16 }}>🔬</div>
-            <h2 style={{ margin: "0 0 12px", fontSize: 26, fontWeight: 800 }}>NCLEX Diagnostic Assessment</h2>
+          <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 36, textAlign: "center" }}>
+            <div style={{ width: 56, height: 56, background: "#0f2744", borderRadius: 8, margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <h2 style={{ margin: "0 0 12px", fontSize: 24, fontWeight: 700, fontFamily: "'Libre Baskerville', serif", color: "#0f2744" }}>NCLEX Diagnostic Assessment</h2>
             <p style={{ color: "#6b7280", fontSize: 16, marginBottom: 24, lineHeight: 1.6, maxWidth: 480, margin: "0 auto 24px" }}>
               20 carefully selected questions covering all 8 NCLEX content areas. This assessment identifies your weak areas and generates a personalized study plan.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, maxWidth: 400, margin: "0 auto 28px", textAlign: "left" }}>
-              {[["📝 20 Questions", "All 8 content areas"], ["⏱️ ~30 minutes", "Untimed, take your time"], ["📊 Instant Results", "Category-by-category analysis"], ["🗺️ Custom Plan", "Personalized week-by-week plan"]].map(([t, d]) => (
+              {[[" 20 Questions", "All 8 content areas"], ["️ ~30 minutes", "Untimed, take your time"], [" Instant Results", "Category-by-category analysis"], ["️ Custom Plan", "Personalized week-by-week plan"]].map(([t, d]) => (
                 <div key={t} style={{ background: "#f9fafb", borderRadius: 10, padding: "12px 14px" }}>
                   <div style={{ fontWeight: 700, fontSize: 14 }}>{t}</div>
                   <div style={{ fontSize: 12, color: "#6b7280" }}>{d}</div>
@@ -925,7 +951,7 @@ function NCLEXPrep() {
         </div>
         <ProgressBar value={qIndex} max={DIAGNOSTIC_QUESTIONS.length} color="#0891b2" />
         
-        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 28, marginTop: 16 }}>
+        <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 28, marginTop: 16 }}>
           <p style={{ fontSize: 17, fontWeight: 600, color: "#111827", lineHeight: 1.6, margin: "0 0 24px" }}>{q.stem}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {q.options.map((opt, i) => {
@@ -942,8 +968,8 @@ function NCLEXPrep() {
                   onClick={() => setDiagnosisState(s => ({ ...s, answers: { ...s.answers, [q.id]: i } }))}
                   style={{ background: bg, border: `2px solid ${border}`, borderRadius: 10, padding: "14px 18px", textAlign: "left", cursor: answered ? "default" : "pointer", color, fontWeight: 500, fontSize: 15, lineHeight: 1.5, transition: "all 0.15s" }}>
                   <span style={{ fontWeight: 700, marginRight: 8 }}>{String.fromCharCode(65 + i)}.</span>{opt}
-                  {answered && isCorrect && <span style={{ float: "right" }}>✅</span>}
-                  {answered && isSelected && !isCorrect && <span style={{ float: "right" }}>❌</span>}
+                  {answered && isCorrect && <span style={{ float: "right" }}>✓</span>}
+                  {answered && isSelected && !isCorrect && <span style={{ float: "right" }}>✗</span>}
                 </button>
               );
             })}
@@ -952,10 +978,10 @@ function NCLEXPrep() {
           {answered && (
             <div style={{ marginTop: 20 }}>
               <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "14px 18px", marginBottom: 10, fontSize: 14, color: "#166534", lineHeight: 1.7 }}>
-                <strong>💡 Rationale:</strong> {q.rationale}
+                <strong>Rationale:</strong> {q.rationale}
               </div>
               <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 10, padding: "12px 18px", fontSize: 13, color: "#1e40af" }}>
-                <strong>🎯 NCLEX Strategy:</strong> {q.strategy}
+                <strong> NCLEX Strategy:</strong> {q.strategy}
               </div>
               <button
                 onClick={() => {
@@ -965,8 +991,8 @@ function NCLEXPrep() {
                     finishDiag(diagnosisState.answers);
                   }
                 }}
-                style={{ marginTop: 16, width: "100%", background: "#0891b2", color: "#fff", border: "none", borderRadius: 10, padding: "14px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>
-                {qIndex < DIAGNOSTIC_QUESTIONS.length - 1 ? "Next Question →" : "View My Results 🎉"}
+                style={{ marginTop: 16, width: "100%", background: "#0f2744", color: "#fff", border: "none", borderRadius: 10, padding: "14px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>
+                {qIndex < DIAGNOSTIC_QUESTIONS.length - 1 ? "Next Question →" : "View My Results "}
               </button>
             </div>
           )}
@@ -990,14 +1016,14 @@ function NCLEXPrep() {
 
       return (
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 28, marginBottom: 20, textAlign: "center" }}>
-            <div style={{ fontSize: 50 }}>{pct >= 70 ? "🏆" : pct >= 50 ? "📈" : "💪"}</div>
+          <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 28, marginBottom: 20, textAlign: "center" }}>
+            <div style={{ fontSize: 50 }}>{pct >= 70 ? "" : pct >= 50 ? "" : ""}</div>
             <h2 style={{ margin: "8px 0 4px", fontSize: 26, fontWeight: 800 }}>Practice Test Complete!</h2>
             <div style={{ fontSize: 52, fontWeight: 900, color: pct >= 70 ? "#166534" : pct >= 50 ? "#b45309" : "#dc2626", margin: "12px 0 4px" }}>{pct}%</div>
             <div style={{ color: "#6b7280", marginBottom: 24 }}>{correct} of {total} correct</div>
             <ProgressBar value={correct} max={total} color={pct >= 70 ? "#166534" : pct >= 50 ? "#b45309" : "#dc2626"} />
             <div style={{ marginTop: 20, display: "flex", gap: 12, justifyContent: "center" }}>
-              <button onClick={() => setPracticeState({ started: false, qIndex: 0, answers: {}, done: false, showResult: null })} style={{ background: "#0891b2", color: "#fff", border: "none", borderRadius: 10, padding: "12px 24px", fontWeight: 700, cursor: "pointer" }}>Try Again</button>
+              <button onClick={() => setPracticeState({ started: false, qIndex: 0, answers: {}, done: false, showResult: null })} style={{ background: "#0f2744", color: "#fff", border: "none", borderRadius: 10, padding: "12px 24px", fontWeight: 700, cursor: "pointer" }}>Try Again</button>
             </div>
           </div>
 
@@ -1007,10 +1033,10 @@ function NCLEXPrep() {
               ? Array.isArray(userAns) && q.correct.every(c => userAns.includes(c)) && userAns.every(c => q.correct.includes(c))
               : userAns === q.correct;
             return (
-              <div key={q.id} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 20, marginBottom: 14 }}>
+              <div key={q.id} style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 20, marginBottom: 14 }}>
                 <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
                   <span style={{ fontWeight: 700, color: "#6b7280", fontSize: 13 }}>Q{i + 1}</span>
-                  <span>{isCorrect ? "✅" : "❌"}</span>
+                  <span>{isCorrect ? "✓" : "✗"}</span>
                   <Badge color={CATEGORIES.find(c => c.id === q.cat)?.color}>{CATEGORIES.find(c => c.id === q.cat)?.label}</Badge>
                   <Badge color="#6b7280">{q.type === "sata" ? "SATA" : "MCQ"}</Badge>
                 </div>
@@ -1018,11 +1044,11 @@ function NCLEXPrep() {
                 <div style={{ fontSize: 13, color: "#166534", marginBottom: 6 }}>
                   <strong>Correct:</strong> {Array.isArray(q.correct) ? q.correct.map(c => q.options[c]).join(", ") : q.options[q.correct]}
                 </div>
-                <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#166534", lineHeight: 1.6 }}>
-                  <strong>💡 Rationale:</strong> {q.rationale}
+                <div style={{ background: "#f0fdf4", border: "none", borderLeft: "3px solid #166534", borderRadius: "0 6px 6px 0", padding: "10px 14px", fontSize: 13, color: "#166534", lineHeight: 1.6 }}>
+                  <strong>Rationale:</strong> {q.rationale}
                 </div>
-                <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "8px 14px", marginTop: 8, fontSize: 12, color: "#1e40af" }}>
-                  <strong>🎯 Strategy:</strong> {q.strategy}
+                <div style={{ background: "#eff6ff", border: "none", borderLeft: "3px solid #1e40af", borderRadius: "0 6px 6px 0", padding: "8px 14px", marginTop: 8, fontSize: 12, color: "#1e40af" }}>
+                  <strong>Strategy:</strong> {q.strategy}
                 </div>
               </div>
             );
@@ -1034,14 +1060,14 @@ function NCLEXPrep() {
     if (!started) {
       return (
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 36, textAlign: "center" }}>
-            <div style={{ fontSize: 60, marginBottom: 16 }}>📝</div>
+          <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 36, textAlign: "center" }}>
+            <div style={{ width: 56, height: 56, background: "#0f2744", borderRadius: 8, margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
             <h2 style={{ margin: "0 0 12px", fontSize: 24, fontWeight: 800 }}>Full NCLEX Practice Test</h2>
             <p style={{ color: "#6b7280", marginBottom: 24, lineHeight: 1.6 }}>
               20 high-yield NCLEX questions including NGN-style SATA questions across all content areas. Full rationales and strategies provided after each question.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, maxWidth: 500, margin: "0 auto 28px" }}>
-              {[["📚", "20 Questions", "Mixed types"], ["🎯", "NGN Format", "SATA included"], ["💡", "Full Rationales", "With strategies"]].map(([icon, t, d]) => (
+              {[["8", "20 Questions", "Mixed types"], ["20+", "NGN Format", "SATA included"], ["", "Full Rationales", "With strategies"]].map(([icon, t, d]) => (
                 <div key={t} style={{ background: "#f9fafb", borderRadius: 10, padding: "14px 10px" }}>
                   <div style={{ fontSize: 24 }}>{icon}</div>
                   <div style={{ fontWeight: 700, fontSize: 14 }}>{t}</div>
@@ -1089,7 +1115,7 @@ function NCLEXPrep() {
         </div>
         <ProgressBar value={qIndex} max={PRACTICE_TEST_QUESTIONS.length} color="#7c3aed" />
 
-        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 28, marginTop: 16 }}>
+        <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 28, marginTop: 16 }}>
           {isSATA && <div style={{ background: "#fef9c3", border: "1px solid #fde047", borderRadius: 8, padding: "8px 14px", marginBottom: 16, fontSize: 13, color: "#854d0e", fontWeight: 600 }}>SELECT ALL THAT APPLY – Choose all correct options</div>}
           <p style={{ fontSize: 16, fontWeight: 600, color: "#111827", lineHeight: 1.6, margin: "0 0 20px" }}>{q.stem}</p>
           
@@ -1117,8 +1143,8 @@ function NCLEXPrep() {
                   style={{ background: bg, border: `2px solid ${border}`, borderRadius: 10, padding: "13px 16px", textAlign: "left", cursor: (answered && !isSATA) ? "default" : "pointer", color, fontWeight: 500, fontSize: 14, lineHeight: 1.5 }}>
                   {isSATA && <span style={{ display: "inline-block", width: 18, height: 18, border: `2px solid ${border}`, borderRadius: 4, marginRight: 10, verticalAlign: "middle", background: (currentSATASelections || []).includes(i) && !answered ? "#3b82f6" : "transparent" }} />}
                   {opt}
-                  {answered && isSATA && q.correct.includes(i) && <span style={{ float: "right" }}>✅</span>}
-                  {answered && isSATA && (currentSATASelections || []).includes(i) && !q.correct.includes(i) && <span style={{ float: "right" }}>❌</span>}
+                  {answered && isSATA && q.correct.includes(i) && <span style={{ float: "right" }}>✓</span>}
+                  {answered && isSATA && (currentSATASelections || []).includes(i) && !q.correct.includes(i) && <span style={{ float: "right" }}>✗</span>}
                 </button>
               );
             })}
@@ -1141,10 +1167,10 @@ function NCLEXPrep() {
           {answered && (
             <div style={{ marginTop: 20 }}>
               <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "14px 18px", marginBottom: 10, fontSize: 14, color: "#166534", lineHeight: 1.7 }}>
-                <strong>💡 Rationale:</strong> {q.rationale}
+                <strong>Rationale:</strong> {q.rationale}
               </div>
               <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 10, padding: "12px 18px", fontSize: 13, color: "#1e40af" }}>
-                <strong>🎯 Strategy:</strong> {q.strategy}
+                <strong>Strategy:</strong> {q.strategy}
               </div>
               <button onClick={() => {
                 if (qIndex < PRACTICE_TEST_QUESTIONS.length - 1) {
@@ -1153,7 +1179,7 @@ function NCLEXPrep() {
                   setPracticeState(s => ({ ...s, done: true }));
                 }
               }} style={{ marginTop: 16, width: "100%", background: "#7c3aed", color: "#fff", border: "none", borderRadius: 10, padding: "14px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>
-                {qIndex < PRACTICE_TEST_QUESTIONS.length - 1 ? "Next Question →" : "See Final Results 🎉"}
+                {qIndex < PRACTICE_TEST_QUESTIONS.length - 1 ? "Next Question →" : "See Final Results "}
               </button>
             </div>
           )}
@@ -1165,7 +1191,7 @@ function NCLEXPrep() {
   // ── STRATEGY TAB ──────────────────────────────────────
   const StrategyTab = () => (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}>🎯 NCLEX Strategies & Hacks</h2>
+      <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}> NCLEX Strategies & Hacks</h2>
       <p style={{ color: "#6b7280", margin: "0 0 24px" }}>Master test-taking strategies used by high-performing NCLEX candidates.</p>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginBottom: 24 }}>
@@ -1181,8 +1207,8 @@ function NCLEXPrep() {
       </div>
 
       {/* Priority Frameworks */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
-        <h3 style={{ margin: "0 0 18px", fontSize: 18, fontWeight: 700 }}>🏆 Priority Frameworks (Memorize These)</h3>
+      <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontSize: 18, fontWeight: 700 }}> Priority Frameworks (Memorize These)</h3>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
           {[
             { title: "ABCs", items: ["Airway – always first", "Breathing – second priority", "Circulation – third", "Then: Disability/Neuro", "Then: Exposure/Environment"] },
@@ -1201,7 +1227,7 @@ function NCLEXPrep() {
 
       {/* Memory Hacks */}
       <div style={{ background: "linear-gradient(135deg, #1e1b4b, #312e81)", borderRadius: 16, padding: 24, color: "#fff" }}>
-        <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>🧠 Memory Hacks & Mnemonics</h3>
+        <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}> Memory Hacks & Mnemonics</h3>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {[
             ["SLUDGE (Cholinergic toxicity)", "Salivation, Lacrimation, Urination, Defecation, GI distress, Emesis"],
@@ -1238,7 +1264,7 @@ function NCLEXPrep() {
 
     return (
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
-        <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}>📅 Your Personalized Study Plan</h2>
+        <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}> Your Personalized Study Plan</h2>
         <p style={{ color: "#6b7280", margin: "0 0 20px" }}>
           {weakArea ? `Based on your diagnostic results, your focus area is: ` : "Suggested 4-week plan: "}
           {weakArea && <strong style={{ color: CATEGORIES.find(c => c.id === area)?.color }}>{catName}</strong>}
@@ -1246,7 +1272,7 @@ function NCLEXPrep() {
 
         {!weakArea && (
           <div style={{ background: "#fef9c3", border: "1px solid #fde047", borderRadius: 12, padding: 14, marginBottom: 20, fontSize: 14, color: "#713f12" }}>
-            💡 Take the <button onClick={() => setTab("diag")} style={{ background: "none", border: "none", color: "#0891b2", fontWeight: 700, cursor: "pointer", fontSize: 14, padding: 0 }}>Diagnostic Test</button> first to get a plan customized to YOUR weak areas!
+             Take the <button onClick={() => setTab("diag")} style={{ background: "none", border: "none", color: "#0891b2", fontWeight: 700, cursor: "pointer", fontSize: 14, padding: 0 }}>Diagnostic Test</button> first to get a plan customized to YOUR weak areas!
           </div>
         )}
 
@@ -1261,8 +1287,8 @@ function NCLEXPrep() {
         </div>
 
         {/* Week 1 Detailed Plan */}
-        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
-          <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: "#0891b2" }}>📋 Week 1: Detailed Daily Plan</h3>
+        <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 20 }}>
+          <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: "#0891b2" }}> Week 1: Detailed Daily Plan</h3>
           <p style={{ color: "#6b7280", margin: "0 0 18px", fontSize: 14 }}>Focused on <strong>{catName}</strong> + Foundation building</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {plan.map((day, i) => (
@@ -1319,11 +1345,11 @@ function NCLEXPrep() {
               { day: "Thu", focus: "150-question NCLEX final simulation", hours: 5 },
               { day: "Fri", focus: "Light review only: strategies, mnemonics, lab values", hours: 2 },
               { day: "Sat", focus: "EXAM DAY PREP: Rest, organize materials, early bedtime", hours: 1 },
-              { day: "Sun", focus: "🎓 NCLEX EXAM DAY – You've got this!", hours: 0 }
+              { day: "Sun", focus: " NCLEX EXAM DAY – You've got this!", hours: 0 }
             ]
           }
         ].map(w => (
-          <div key={w.week} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 22, marginBottom: 16 }}>
+          <div key={w.week} style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 22, marginBottom: 16 }}>
             <h3 style={{ margin: "0 0 14px", fontSize: 16, fontWeight: 700, color: w.color }}>Week {w.week}</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {w.days.map((d, i) => (
@@ -1339,7 +1365,7 @@ function NCLEXPrep() {
 
         {/* Resources */}
         <div style={{ background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)", border: "1px solid #bae6fd", borderRadius: 16, padding: 22 }}>
-          <h3 style={{ margin: "0 0 14px", color: "#0c4a6e", fontWeight: 700 }}>📚 Recommended Resources</h3>
+          <h3 style={{ margin: "0 0 14px", color: "#0c4a6e", fontWeight: 700 }}> Recommended Resources</h3>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {[
               ["UWorld NCLEX-RN Qbank", "Gold standard – aim for 60%+ average", "#0891b2"],
@@ -1364,14 +1390,14 @@ function NCLEXPrep() {
   const CaliforniaTab = () => (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
       <div style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a, #fbbf24)", borderRadius: 18, padding: "28px 30px", marginBottom: 24, color: "#78350f" }}>
-        <div style={{ fontSize: 40, marginBottom: 8 }}>🌅</div>
+        
         <h2 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800 }}>California BRN Licensing Guide</h2>
         <p style={{ margin: 0, fontSize: 15, opacity: 0.85 }}>Complete step-by-step guide to getting your California RN license after passing NCLEX</p>
       </div>
 
       {/* Steps */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
-        <h3 style={{ margin: "0 0 18px", fontWeight: 700 }}>📋 Application Process (Step-by-Step)</h3>
+      <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontWeight: 700 }}> Application Process (Step-by-Step)</h3>
         {[
           { step: 1, title: "Apply to California BRN", desc: "Submit application at breeze.ca.gov (California's online licensing system). Application fee: ~$100-150. Includes personal information, nursing program information, background disclosure.", time: "Day 1", color: "#0891b2" },
           { step: 2, title: "Fingerprinting (LiveScan)", desc: "Get fingerprinted at a DOJ-approved LiveScan site in California. Fee: ~$50-90. Must submit fingerprints to both DOJ and FBI. Results sent directly to BRN.", time: "Day 1-3", color: "#7c3aed" },
@@ -1398,7 +1424,7 @@ function NCLEXPrep() {
       {/* Important Notes */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
         <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 14, padding: 20 }}>
-          <h4 style={{ margin: "0 0 12px", color: "#dc2626", fontWeight: 700 }}>⚠️ Common Pitfalls</h4>
+          <h4 style={{ margin: "0 0 12px", color: "#dc2626", fontWeight: 700 }}>Note: Common Pitfalls</h4>
           <ul style={{ margin: 0, paddingLeft: 18, color: "#7f1d1d", fontSize: 13, lineHeight: 2 }}>
             <li>Not checking BRN status regularly</li>
             <li>Forgetting to have school send transcripts</li>
@@ -1409,7 +1435,7 @@ function NCLEXPrep() {
           </ul>
         </div>
         <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 14, padding: 20 }}>
-          <h4 style={{ margin: "0 0 12px", color: "#166534", fontWeight: 700 }}>✅ Fast-Track Tips</h4>
+          <h4 style={{ margin: "0 0 12px", color: "#166534", fontWeight: 700 }}>✓ Fast-Track Tips</h4>
           <ul style={{ margin: 0, paddingLeft: 18, color: "#14532d", fontSize: 13, lineHeight: 2 }}>
             <li>Submit all materials simultaneously</li>
             <li>Use electronic transcript submission</li>
@@ -1422,8 +1448,8 @@ function NCLEXPrep() {
       </div>
 
       {/* CA-Specific Requirements */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 22 }}>
-        <h4 style={{ margin: "0 0 12px", fontWeight: 700 }}>🏛️ California-Specific Requirements</h4>
+      <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 22 }}>
+        <h4 style={{ margin: "0 0 12px", fontWeight: 700 }}>️ California-Specific Requirements</h4>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {[
             ["CE Requirements for Renewal", "30 hours continuing education every 2 years. Includes mandatory child abuse reporting, domestic violence. License renews every 2 years."],
@@ -1447,14 +1473,14 @@ function NCLEXPrep() {
   const NGNTab = () => (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <div style={{ background: "linear-gradient(135deg, #1e1b4b, #4c1d95, #6d28d9)", borderRadius: 18, padding: "28px 30px", marginBottom: 24, color: "#fff" }}>
-        <div style={{ fontSize: 40, marginBottom: 8 }}>🧠</div>
+        
         <h2 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800 }}>Next Generation NCLEX (NGN) Guide</h2>
         <p style={{ margin: 0, fontSize: 15, opacity: 0.9 }}>Master the new Clinical Judgment question formats introduced in April 2023</p>
       </div>
 
       {/* Clinical Judgment Model */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
-        <h3 style={{ margin: "0 0 18px", fontWeight: 700, fontSize: 18 }}>🔬 Clinical Judgment Measurement Model (CJMM)</h3>
+      <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontWeight: 700, fontSize: 18 }}> Clinical Judgment Measurement Model (CJMM)</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
           {[
             { num: 1, title: "Recognize Cues", desc: "Filter relevant from irrelevant information. What is abnormal? What has changed?", color: "#0891b2" },
@@ -1474,8 +1500,8 @@ function NCLEXPrep() {
       </div>
 
       {/* NGN Question Types */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
-        <h3 style={{ margin: "0 0 18px", fontWeight: 700 }}>📝 NGN Question Types & How to Answer Them</h3>
+      <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontWeight: 700 }}> NGN Question Types & How to Answer Them</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {NGNTIPS.map(t => (
             <div key={t.type} style={{ display: "flex", gap: 16, padding: "16px 18px", background: "#f9fafb", borderRadius: 12, borderLeft: `4px solid ${t.color}` }}>
@@ -1489,8 +1515,8 @@ function NCLEXPrep() {
       </div>
 
       {/* Sample Bow-tie */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
-        <h3 style={{ margin: "0 0 6px", fontWeight: 700 }}>🦋 Sample Bow-Tie Question</h3>
+      <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 6px", fontWeight: 700 }}> Sample Bow-Tie Question</h3>
         <p style={{ color: "#6b7280", fontSize: 13, margin: "0 0 18px" }}>Bow-tie questions ask you to identify the condition, causes, and nursing actions simultaneously</p>
 
         <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 16, marginBottom: 16 }}>
@@ -1504,14 +1530,14 @@ function NCLEXPrep() {
             <div style={{ fontWeight: 700, color: "#dc2626", fontSize: 12, marginBottom: 8 }}>POTENTIAL CONDITIONS (causes)</div>
             {["Acute pulmonary edema", "Pneumothorax", "Pulmonary embolism"].map((c, i) => (
               <div key={c} style={{ padding: "8px 10px", background: i === 0 ? "#dc262622" : "#fff", borderRadius: 6, marginBottom: 6, fontSize: 13, border: i === 0 ? "1px solid #dc2626" : "1px solid #e5e7eb", color: i === 0 ? "#dc2626" : "#374151", fontWeight: i === 0 ? 700 : 400 }}>
-                {i === 0 && "✅ "}{c}
+                {i === 0 && "✓ "}{c}
               </div>
             ))}
           </div>
           <div style={{ textAlign: "center", paddingTop: 40 }}>
             <div style={{ background: "#111827", color: "#fff", borderRadius: 10, padding: "10px 14px", fontWeight: 700, fontSize: 13 }}>Priority Condition</div>
-            <div style={{ fontSize: 22, margin: "8px 0" }}>🦋</div>
-            <div style={{ background: "#0891b2", color: "#fff", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 600 }}>Acute Pulmonary Edema / Cardiogenic Shock</div>
+            <div style={{ fontSize: 22, margin: "8px 0" }}></div>
+            <div style={{ background: "#0f2744", color: "#fff", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 600 }}>Acute Pulmonary Edema / Cardiogenic Shock</div>
           </div>
           <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: 14 }}>
             <div style={{ fontWeight: 700, color: "#166534", fontSize: 12, marginBottom: 8 }}>NURSING ACTIONS</div>
@@ -1525,8 +1551,8 @@ function NCLEXPrep() {
       </div>
 
       {/* Scoring */}
-      <div style={{ background: "linear-gradient(135deg, #1e1b4b, #312e81)", borderRadius: 14, padding: 22, color: "#fff" }}>
-        <h3 style={{ margin: "0 0 14px", fontWeight: 700 }}>📊 NGN Scoring & Passing Standard</h3>
+      <div style={{ background: "#0f2744", borderRadius: 8, padding: 22, color: "#fff" }}>
+        <h3 style={{ margin: "0 0 14px", fontWeight: 700 }}>NGN Scoring & Passing Standard</h3>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {[
             ["Partial Credit Scoring", "NGN uses partial credit for multi-part items. Getting 3 of 6 options correct = partial score. NOT all-or-nothing like traditional SATA."],
@@ -1544,26 +1570,376 @@ function NCLEXPrep() {
     </div>
   );
 
+  // ── AI QUESTIONS TAB ──────────────────────────────────
+  const AIQuestionsTab = () => {
+    const { useState: useLocalState } = React;
+    const [apiKey, setApiKey] = useLocalState(HARDCODED_API_KEY || "");
+    const [keyEntered, setKeyEntered] = useLocalState(!!HARDCODED_API_KEY);
+    const [selectedCats, setSelectedCats] = useLocalState(() => {
+      // Pre-select weak areas if diagnostic is done
+      if (diagnosisState.done && weakArea) return [weakArea];
+      return [];
+    });
+    const [count, setCount] = useLocalState(15);
+    const [loading, setLoading] = useLocalState(false);
+    const [error, setError] = useLocalState("");
+    const [questions, setQuestions] = useLocalState([]);
+    const [answers, setAnswers] = useLocalState({});
+    const [revealed, setRevealed] = useLocalState({});
+    const [sessionDone, setSessionDone] = useLocalState(false);
+
+    const diagDone = diagnosisState.done;
+    const diagScores = diagnosisState.scores;
+
+    const toggleCat = (id) => {
+      setSelectedCats(prev =>
+        prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+      );
+    };
+
+    const getCatScore = (id) => {
+      if (!diagDone || !diagScores[id] || diagScores[id].total === 0) return null;
+      return Math.round((diagScores[id].correct / diagScores[id].total) * 100);
+    };
+
+    const generateQuestions = async () => {
+      if (selectedCats.length === 0) { setError("Select at least one category."); return; }
+      if (!apiKey.trim()) { setError("Enter your Anthropic API key to generate questions."); return; }
+      setError("");
+      setLoading(true);
+      setQuestions([]);
+      setAnswers({});
+      setRevealed({});
+      setSessionDone(false);
+
+      const catLabels = selectedCats.map(id => CATEGORIES.find(c => c.id === id)?.label).join(", ");
+      const diagContext = diagDone
+        ? `The student just completed a diagnostic test. Their scores: ${selectedCats.map(id => {
+            const s = diagScores[id];
+            if (!s || s.total === 0) return null;
+            return `${CATEGORIES.find(c=>c.id===id)?.label}: ${Math.round(s.correct/s.total*100)}%`;
+          }).filter(Boolean).join(", ")}. Generate questions that target concepts the student is likely struggling with based on these low scores.`
+        : "Generate challenging NCLEX-style questions for a nursing student preparing for the NCLEX-RN exam.";
+
+      const prompt = `You are an expert NCLEX-RN question writer. ${diagContext}
+
+Generate exactly ${count} NCLEX-RN style multiple choice questions focused on: ${catLabels}.
+
+Rules:
+- Each question must be realistic, clinical, scenario-based
+- 4 answer options each (A-D), only ONE correct answer
+- Include a detailed rationale (3-5 sentences) explaining why the correct answer is right AND why the distractors are wrong
+- Include a short test-taking strategy tip (1-2 sentences)
+- Vary difficulty: mix moderate and hard questions
+- Use NGN clinical judgment language where appropriate
+
+Respond ONLY with valid JSON, no markdown, no backticks, no extra text. Format:
+{
+  "questions": [
+    {
+      "id": 1,
+      "category": "category name",
+      "stem": "Clinical scenario and question",
+      "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
+      "correct": 0,
+      "rationale": "Full rationale explaining correct answer and why others are wrong.",
+      "strategy": "Test-taking tip."
+    }
+  ]
+}`;
+
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 8000,
+            messages: [{ role: "user", content: prompt }]
+          })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData?.error?.message || `API error ${res.status}`);
+        }
+
+        const data = await res.json();
+        const text = data.content?.find(b => b.type === "text")?.text || "";
+        const clean = text.replace(/```json|```/g, "").trim();
+        const parsed = JSON.parse(clean);
+        setQuestions(parsed.questions || []);
+      } catch (e) {
+        setError("Error: " + e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const selectAnswer = (qId, idx) => {
+      if (revealed[qId]) return;
+      setAnswers(prev => ({ ...prev, [qId]: idx }));
+    };
+
+    const revealAnswer = (qId) => {
+      if (answers[qId] === undefined) return;
+      setRevealed(prev => ({ ...prev, [qId]: true }));
+    };
+
+    const revealAll = () => {
+      const allRevealed = {};
+      questions.forEach(q => { if (answers[q.id] !== undefined) allRevealed[q.id] = true; });
+      setRevealed(allRevealed);
+      setSessionDone(true);
+    };
+
+    const score = questions.filter(q => revealed[q.id] && answers[q.id] === q.correct).length;
+    const attempted = questions.filter(q => revealed[q.id]).length;
+
+    return (
+      <div style={{ maxWidth: 820, margin: "0 auto" }}>
+
+        {/* Header */}
+        <div style={{ background: "#0f2744", borderRadius: 8, padding: "28px 32px", marginBottom: 24, color: "#fff", borderLeft: "4px solid #c97d1a" }}>
+          <div style={{ fontSize: 11, letterSpacing: 3, opacity: 0.6, textTransform: "uppercase", marginBottom: 6 }}>AI-Powered</div>
+          <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 700, fontFamily: "'Libre Baskerville', serif" }}>Personalized Practice Questions</h2>
+          <p style={{ margin: 0, opacity: 0.8, fontSize: 14, lineHeight: 1.6 }}>
+            Claude generates fresh NCLEX questions targeting your weakest categories — different every time, calibrated to your diagnostic results.
+          </p>
+        </div>
+
+        {/* API Key Entry */}
+        {!keyEntered ? (
+          <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 28, marginBottom: 24 }}>
+            <h3 style={{ margin: "0 0 6px", fontFamily: "'Libre Baskerville', serif", color: "#0f2744" }}>Enter Your Anthropic API Key</h3>
+            <p style={{ margin: "0 0 16px", fontSize: 13, color: "#4a5a72", lineHeight: 1.6 }}>
+              This feature uses the Claude API to generate questions. Your key is used only in your browser and never stored or sent anywhere except Anthropic's servers.
+              Get a free key at <a href="https://console.anthropic.com" target="_blank" style={{ color: "#0d7377" }}>console.anthropic.com</a>.
+            </p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <input
+                type="password"
+                placeholder="sk-ant-..."
+                value={apiKey}
+                onChange={e => setApiKey(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && apiKey.startsWith("sk-") && setKeyEntered(true)}
+                style={{ flex: 1, padding: "10px 14px", border: "1px solid #dde3ec", borderRadius: 6, fontSize: 14, fontFamily: "'Karla', sans-serif", outline: "none", color: "#0f2744" }}
+              />
+              <button
+                onClick={() => { if (apiKey.startsWith("sk-")) setKeyEntered(true); else setError("Key should start with sk-ant-"); }}
+                style={{ background: "#0f2744", color: "#fff", border: "none", borderRadius: 6, padding: "10px 20px", fontWeight: 700, cursor: "pointer", fontSize: 13, letterSpacing: "0.04em", fontFamily: "'Karla', sans-serif" }}>
+                Continue
+              </button>
+            </div>
+            {error && <div style={{ marginTop: 10, color: "#b91c1c", fontSize: 13 }}>{error}</div>}
+          </div>
+        ) : (
+          <>
+            {/* Config Panel */}
+            <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <h3 style={{ margin: 0, fontFamily: "'Libre Baskerville', serif", color: "#0f2744", fontSize: 16 }}>Configure Your Session</h3>
+                <button onClick={() => setKeyEntered(false)} style={{ background: "none", border: "none", color: "#8294a8", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>Change API Key</button>
+              </div>
+
+              {/* Diagnostic banner */}
+              {diagDone ? (
+                <div style={{ background: "#f0fdf4", border: "none", borderLeft: "3px solid #166534", borderRadius: "0 6px 6px 0", padding: "10px 14px", marginBottom: 18, fontSize: 13, color: "#166534" }}>
+                  Diagnostic complete — weak areas are pre-selected below. Claude will calibrate question difficulty to your scores.
+                </div>
+              ) : (
+                <div style={{ background: "#fffbf0", border: "none", borderLeft: "3px solid #c97d1a", borderRadius: "0 6px 6px 0", padding: "10px 14px", marginBottom: 18, fontSize: 13, color: "#92400e" }}>
+                  Tip: Complete the Diagnostic Test first so AI questions are tailored to your weak areas.
+                </div>
+              )}
+
+              {/* Category selector */}
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#4a5a72", marginBottom: 10 }}>Select Categories to Practice</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                  {CATEGORIES.map(c => {
+                    const catScore = getCatScore(c.id);
+                    const isWeak = catScore !== null && catScore < 60;
+                    const isSelected = selectedCats.includes(c.id);
+                    return (
+                      <button key={c.id} onClick={() => toggleCat(c.id)} style={{
+                        display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
+                        background: isSelected ? "#0f2744" : "#f4f6f9",
+                        border: isSelected ? "1px solid #0f2744" : "1px solid #dde3ec",
+                        borderRadius: 6, cursor: "pointer", textAlign: "left", transition: "all 0.15s",
+                        fontFamily: "'Karla', sans-serif"
+                      }}>
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: isSelected ? "#c97d1a" : c.color, flexShrink: 0 }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: isSelected ? "#fff" : "#0f2744" }}>{c.label}</div>
+                          {catScore !== null && (
+                            <div style={{ fontSize: 11, color: isSelected ? "rgba(255,255,255,0.6)" : (isWeak ? "#b91c1c" : "#166534") }}>
+                              Diagnostic: {catScore}%{isWeak ? " — needs work" : ""}
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Question count */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#4a5a72", marginBottom: 10 }}>Number of Questions</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[15, 20, 30, 50].map(n => (
+                    <button key={n} onClick={() => setCount(n)} style={{
+                      padding: "8px 18px", border: count === n ? "2px solid #0f2744" : "1px solid #dde3ec",
+                      borderRadius: 6, background: count === n ? "#0f2744" : "#fff",
+                      color: count === n ? "#fff" : "#4a5a72", cursor: "pointer", fontWeight: 700, fontSize: 14,
+                      fontFamily: "'Karla', sans-serif"
+                    }}>{n}</button>
+                  ))}
+                </div>
+              </div>
+
+              {error && <div style={{ marginBottom: 12, color: "#b91c1c", fontSize: 13, padding: "8px 12px", background: "#fef2f2", borderRadius: 6 }}>{error}</div>}
+
+              <button onClick={generateQuestions} disabled={loading} style={{
+                width: "100%", background: loading ? "#8294a8" : "#c97d1a", color: "#fff", border: "none",
+                borderRadius: 6, padding: "14px", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer",
+                fontSize: 14, letterSpacing: "0.05em", textTransform: "uppercase", fontFamily: "'Karla', sans-serif",
+                transition: "background 0.2s"
+              }}>
+                {loading ? "Generating Questions..." : `Generate ${count} AI Questions`}
+              </button>
+            </div>
+
+            {/* Loading state */}
+            {loading && (
+              <div style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 40, textAlign: "center" }}>
+                <div style={{ width: 40, height: 40, border: "3px solid #dde3ec", borderTopColor: "#0f2744", borderRadius: "50%", margin: "0 auto 16px", animation: "spin 0.8s linear infinite" }} />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                <div style={{ fontSize: 15, color: "#0f2744", fontWeight: 600, marginBottom: 6 }}>Claude is writing your questions...</div>
+                <div style={{ fontSize: 13, color: "#8294a8" }}>Calibrating to your diagnostic results</div>
+              </div>
+            )}
+
+            {/* Questions */}
+            {questions.length > 0 && (
+              <div>
+                {/* Score summary if session done */}
+                {sessionDone && (
+                  <div style={{ background: "#0f2744", borderRadius: 8, padding: "20px 24px", marginBottom: 20, color: "#fff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ fontSize: 11, letterSpacing: 3, opacity: 0.6, textTransform: "uppercase", marginBottom: 4 }}>Session Complete</div>
+                      <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'Libre Baskerville', serif" }}>
+                        {score} / {questions.length} <span style={{ fontSize: 16, opacity: 0.7, fontFamily: "'Karla', sans-serif" }}>({Math.round(score/questions.length*100)}%)</span>
+                      </div>
+                    </div>
+                    <button onClick={generateQuestions} style={{ background: "#c97d1a", color: "#fff", border: "none", borderRadius: 6, padding: "10px 20px", fontWeight: 700, cursor: "pointer", fontSize: 13, letterSpacing: "0.04em", fontFamily: "'Karla', sans-serif" }}>
+                      New Set
+                    </button>
+                  </div>
+                )}
+
+                {questions.map((q, i) => {
+                  const userAns = answers[q.id];
+                  const isRevealed = revealed[q.id];
+                  const isCorrect = userAns === q.correct;
+                  return (
+                    <div key={q.id} style={{ background: "#fff", border: "1px solid #dde3ec", borderRadius: 8, padding: 24, marginBottom: 16, borderTop: isRevealed ? `3px solid ${isCorrect ? "#166534" : "#b91c1c"}` : "3px solid #dde3ec" }}>
+                      <div style={{ display: "flex", gap: 10, marginBottom: 12, alignItems: "center" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#8294a8", letterSpacing: "0.06em", textTransform: "uppercase" }}>Q{i + 1}</span>
+                        <span style={{ fontSize: 11, background: "#f4f6f9", color: "#4a5a72", borderRadius: 4, padding: "2px 8px", fontWeight: 600 }}>{q.category}</span>
+                        {isRevealed && (
+                          <span style={{ fontSize: 11, fontWeight: 700, color: isCorrect ? "#166534" : "#b91c1c", marginLeft: "auto" }}>
+                            {isCorrect ? "Correct" : "Incorrect"}
+                          </span>
+                        )}
+                      </div>
+
+                      <p style={{ margin: "0 0 16px", fontSize: 15, color: "#0f2744", lineHeight: 1.7, fontWeight: 500 }}>{q.stem}</p>
+
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                        {q.options.map((opt, idx) => {
+                          let bg = "#f4f6f9", border = "1px solid #dde3ec", color = "#0f2744";
+                          if (userAns === idx && !isRevealed) { bg = "#e8eef7"; border = "1px solid #0f2744"; }
+                          if (isRevealed && idx === q.correct) { bg = "#f0fdf4"; border = "1px solid #166534"; color = "#166534"; }
+                          if (isRevealed && userAns === idx && idx !== q.correct) { bg = "#fef2f2"; border = "1px solid #b91c1c"; color = "#b91c1c"; }
+                          return (
+                            <button key={idx} onClick={() => selectAnswer(q.id, idx)} style={{
+                              display: "flex", alignItems: "flex-start", gap: 10, padding: "11px 14px",
+                              background: bg, border, borderRadius: 6, cursor: isRevealed ? "default" : "pointer",
+                              textAlign: "left", fontFamily: "'Karla', sans-serif", transition: "all 0.1s"
+                            }}>
+                              <span style={{ fontWeight: 700, color, fontSize: 13, minWidth: 18, flexShrink: 0 }}>
+                                {String.fromCharCode(65 + idx)}.
+                              </span>
+                              <span style={{ fontSize: 14, color, lineHeight: 1.5 }}>{opt}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {!isRevealed ? (
+                        <button onClick={() => revealAnswer(q.id)} disabled={userAns === undefined} style={{
+                          background: userAns === undefined ? "#f4f6f9" : "#0f2744",
+                          color: userAns === undefined ? "#8294a8" : "#fff",
+                          border: "none", borderRadius: 6, padding: "9px 18px", fontWeight: 700,
+                          cursor: userAns === undefined ? "not-allowed" : "pointer", fontSize: 13,
+                          letterSpacing: "0.04em", fontFamily: "'Karla', sans-serif"
+                        }}>
+                          Check Answer
+                        </button>
+                      ) : (
+                        <div>
+                          <div style={{ background: "#f0fdf4", borderLeft: "3px solid #166534", borderRadius: "0 6px 6px 0", padding: "12px 16px", marginBottom: 8, fontSize: 13, color: "#166534", lineHeight: 1.7 }}>
+                            <strong>Rationale:</strong> {q.rationale}
+                          </div>
+                          <div style={{ background: "#eff6ff", borderLeft: "3px solid #1e40af", borderRadius: "0 6px 6px 0", padding: "10px 16px", fontSize: 12, color: "#1e40af", lineHeight: 1.6 }}>
+                            <strong>Strategy:</strong> {q.strategy}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {!sessionDone && (
+                  <button onClick={revealAll} style={{
+                    width: "100%", background: "#f4f6f9", color: "#0f2744", border: "1px solid #dde3ec",
+                    borderRadius: 6, padding: "12px", fontWeight: 700, cursor: "pointer", fontSize: 13,
+                    letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: "'Karla', sans-serif", marginTop: 8
+                  }}>
+                    Submit All & See Results
+                  </button>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
+
   // ── TAB NAVIGATION ────────────────────────────────────
   const TABS = [
-    { id: "home", label: "🏠 Home" },
-    { id: "diag", label: "🔬 Diagnostic" },
-    { id: "practice", label: "📝 Practice" },
-    { id: "strategy", label: "🎯 Strategies" },
-    { id: "plan", label: "📅 Study Plan" },
-    { id: "california", label: "🌅 California" },
-    { id: "ngn", label: "🧠 NGN Guide" }
+    { id: "home", label: "Home" },
+    { id: "diag", label: "Diagnostic" },
+    { id: "practice", label: "Practice" },
+    { id: "ai", label: "AI Questions" },
+    { id: "strategy", label: "Strategies" },
+    { id: "plan", label: "Study Plan" },
+    { id: "california", label: "California" },
+    { id: "ngn", label: "NGN Guide" }
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "var(--slate)", fontFamily: "'Karla', sans-serif" }}>
       {/* Top Bar */}
-      <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", position: "sticky", top: 0, zIndex: 100 }}>
+      <div style={{ background: "#0f2744", borderBottom: "none", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 16px" }}>
           <div style={{ display: "flex", alignItems: "center", overflowX: "auto", gap: 2, padding: "12px 0" }}>
             {TABS.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)}
-                style={{ padding: "8px 14px", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, fontSize: 13, whiteSpace: "nowrap", background: tab === t.id ? "#0891b2" : "transparent", color: tab === t.id ? "#fff" : "#6b7280", transition: "all 0.15s" }}>
+                style={{ padding: "9px 16px", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, fontSize: 13, whiteSpace: "nowrap", letterSpacing: "0.02em", textTransform: "uppercase", background: tab === t.id ? "#c97d1a" : "transparent", color: tab === t.id ? "#fff" : "rgba(255,255,255,0.55)", transition: "all 0.15s", fontFamily: "'Karla', sans-serif" }}>
                 {t.label}
               </button>
             ))}
@@ -1572,10 +1948,11 @@ function NCLEXPrep() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 16px 60px" }}>
+      <div style={{ maxWidth: 960, margin: "0 auto", padding: "32px 20px 80px" }}>
         {tab === "home" && <HomeTab />}
         {tab === "diag" && <DiagTab />}
         {tab === "practice" && <PracticeTab />}
+        {tab === "ai" && <AIQuestionsTab />}
         {tab === "strategy" && <StrategyTab />}
         {tab === "plan" && <PlanTab />}
         {tab === "california" && <CaliforniaTab />}
