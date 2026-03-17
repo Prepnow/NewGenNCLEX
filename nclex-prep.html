@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>California NCLEX-RN Prep | Pass Fast</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const CATEGORIES = [
+  { id: "mgmt", label: "Management of Care", color: "#0891b2", pct: "17-23%" },
+  { id: "safety", label: "Safety & Infection Control", color: "#0e7490", pct: "9-15%" },
+  { id: "health", label: "Health Promotion", color: "#0d9488", pct: "6-12%" },
+  { id: "psycho", label: "Psychosocial Integrity", color: "#7c3aed", pct: "6-12%" },
+  { id: "basic", label: "Basic Care & Comfort", color: "#b45309", pct: "6-12%" },
+  { id: "pharma", label: "Pharmacological Therapies", color: "#dc2626", pct: "13-19%" },
+  { id: "risk", label: "Reduction of Risk Potential", color: "#c2410c", pct: "9-15%" },
+  { id: "physio", label: "Physiological Adaptation", color: "#166534", pct: "11-17%" },
+];
+
+const DIAGNOSTIC_QUESTIONS = [
+  {
+    id: 1, cat: "pharma",
+    stem: "A nurse is preparing to administer digoxin 0.125 mg PO to an adult client. Before administering the medication, the nurse assesses the client's apical pulse and obtains a rate of 54 beats/min. Which action should the nurse take?",
+    options: ["Administer the medication as prescribed","Hold the medication and notify the provider","Administer half the prescribed dose","Reassess the pulse in 30 minutes"],
+    correct: 1,
+    rationale: "Digoxin (a cardiac glycoside) should be HELD and the provider notified when the apical pulse is below 60 bpm in adults. The drug slows the heart rate; giving it with bradycardia risks dangerous bradycardia or heart block. Always hold digoxin at <60 bpm (adult), <70 bpm (child), <90 bpm (infant).",
+    strategy: "SAFETY FIRST: Digoxin parameters – hold <60 bpm adult. This is a HIGH-YIELD pharmacology fact tested repeatedly."
+  },
+  {
+    id: 2, cat: "mgmt",
+    stem: "A charge nurse must assign four clients to a licensed practical nurse (LPN). Which client assignment is MOST appropriate?",
+    options: [
+      "A newly admitted client with acute respiratory distress",
+      "A client 2 hours post-op after a coronary artery bypass graft",
+      "A client with a stable, chronic wound requiring daily dressing changes",
+      "A client receiving IV push medications every 4 hours"
+    ],
+    correct: 2,
+    rationale: "LPNs are appropriate for stable clients with predictable outcomes. A stable chronic wound dressing change is within LPN scope. LPNs cannot perform initial assessments on unstable clients, care for fresh post-op CABG patients, or (in most states) administer IV push medications.",
+    strategy: "DELEGATION: RN=Unstable/complex/assessment/IV push. LPN=Stable/chronic/predictable. UAP=Basic ADLs only."
+  },
+  {
+    id: 3, cat: "physio",
+    stem: "A nurse is caring for a client in diabetic ketoacidosis (DKA). Which laboratory finding is the nurse's priority concern?",
+    options: ["Blood glucose 480 mg/dL","Serum potassium 2.8 mEq/L","Arterial pH 7.28","Serum sodium 130 mEq/L"],
+    correct: 1,
+    rationale: "Hypokalemia (K+ 2.8 mEq/L) is the PRIORITY because DKA treatment (insulin, fluids) drives potassium INTO cells, worsening hypokalemia rapidly, which can cause fatal cardiac dysrhythmias. Potassium must be replaced before or concurrent with insulin if K+ < 3.5. High glucose is expected; acidosis and hyponatremia are also concerns but K+ is most immediately life-threatening.",
+    strategy: "ABCs + PRIORITY: In DKA, watch K+ closely. Insulin causes K+ to shift intracellularly. K+ < 3.5 = HOLD insulin, give K+ first."
+  },
+  {
+    id: 4, cat: "safety",
+    stem: "A nurse is caring for a client who has C. difficile infection. Which personal protective equipment (PPE) should the nurse wear when providing care?",
+    options: [
+      "Gloves only",
+      "Gloves and gown",
+      "Gloves, gown, and surgical mask",
+      "Gloves, gown, and N95 respirator"
+    ],
+    correct: 1,
+    rationale: "C. difficile requires Contact Precautions: gloves AND gown. A mask is NOT required unless there is a splash risk. CRITICAL: Alcohol-based hand sanitizers are INEFFECTIVE against C. diff spores – use soap and water. C. diff is contact-transmitted via fecal-oral route, not airborne.",
+    strategy: "ISOLATION TYPES: Contact=gown+gloves(C.diff,MRSA,VRE). Droplet=mask(influenza,meningitis). Airborne=N95+negative pressure(TB,varicella,measles). C.diff=SOAP not alcohol gel!"
+  },
+  {
+    id: 5, cat: "psycho",
+    stem: "A nurse is caring for a client who states, 'I've been thinking about ending my life.' Which response by the nurse is BEST?",
+    options: [
+      "\"I'll need to tell your family about this immediately.\"",
+      "\"Have you thought about how you might do this?\"",
+      "\"Why would you want to do something like that?\"",
+      "\"I'm sure things will get better. Let's focus on the positive.\""
+    ],
+    correct: 1,
+    rationale: "Assessing for a specific plan (method, means, intent, timeline) is the PRIORITY when a client expresses suicidal ideation. A specific plan indicates higher lethality risk and guides intervention. Asking 'why' is non-therapeutic. False reassurance ('things will get better') dismisses the client's feelings. Immediately notifying family violates confidentiality.",
+    strategy: "SUICIDAL IDEATION: Always assess PLAN (how, when, means). Specific plan = high risk = immediate safety measures. Therapeutic communication first, safety second."
+  },
+  {
+    id: 6, cat: "basic",
+    stem: "A nurse is caring for a client with a nasogastric (NG) tube. Before administering a tube feeding, which action should the nurse take FIRST?",
+    options: [
+      "Aspirate and measure gastric residual volume",
+      "Flush the tube with 30 mL of water",
+      "Verify tube placement by x-ray confirmation",
+      "Elevate the head of the bed to 45 degrees"
+    ],
+    correct: 2,
+    rationale: "X-ray confirmation is the GOLD STANDARD for verifying NG tube placement, especially on initial placement or if there is any doubt about placement. However, before each feeding, nurses verify placement by checking for a pH <5 of aspirate and confirming the external marking. Elevating HOB reduces aspiration risk and should be done, but placement verification is the first priority.",
+    strategy: "NG TUBE SAFETY: X-ray=gold standard (initial). Before each feeding=check pH<5 + external marking. HOB 30-45° prevents aspiration. NEVER test placement by air auscultation alone."
+  },
+  {
+    id: 7, cat: "risk",
+    stem: "A nurse is reviewing the morning laboratory results for a client who is post-operative day 1 following a bowel resection. Which finding requires immediate intervention?",
+    options: [
+      "Hemoglobin 10.2 g/dL",
+      "Serum sodium 136 mEq/L",
+      "WBC count 11,500/mm³",
+      "INR 4.8"
+    ],
+    correct: 3,
+    rationale: "INR 4.8 is critically elevated (normal 0.8-1.1; therapeutic anticoagulation ~2-3). Post-operative, this dramatically increases hemorrhage risk and requires immediate intervention (hold anticoagulants, notify provider, anticipate reversal agents like Vitamin K or FFP). Hgb 10.2 is low but expected post-op. Slight WBC elevation is normal post-surgical response.",
+    strategy: "CRITICAL LAB VALUES to memorize: INR >3 (non-therapeutic) = bleeding risk. Platelets <50,000 = bleeding risk. K+ <3.0 or >6.0 = cardiac risk. Na+ <120 or >155 = neuro risk."
+  },
+  {
+    id: 8, cat: "health",
+    stem: "A nurse is providing discharge teaching to a client who had a total hip replacement. Which instruction is MOST important to prevent dislocation?",
+    options: [
+      "Avoid crossing your legs at the knees",
+      "Sleep on the operative side for comfort",
+      "Bend at the waist no more than 120 degrees",
+      "Use a regular toilet seat at home"
+    ],
+    correct: 0,
+    rationale: "After total hip replacement (posterior approach, most common), the client must NEVER cross legs, never flex hip >90 degrees, and never internally rotate the hip. Crossing legs adducts the hip and risks dislocation. A raised toilet seat is needed (not regular). Sleep on non-operative side with pillow between legs.",
+    strategy: "HIP REPLACEMENT (posterior): Remember '90-90 rule' – No hip flexion >90°, no internal rotation, no adduction (no crossing legs). Use: raised toilet seat, elevated chair, abduction pillow."
+  },
+  {
+    id: 9, cat: "pharma",
+    stem: "A nurse is preparing to administer morphine 4 mg IV to a client for post-operative pain. The client's respiratory rate is 10 breaths/min and oxygen saturation is 92%. Which action should the nurse take?",
+    options: [
+      "Administer the morphine as prescribed",
+      "Administer half the dose and reassess",
+      "Hold the morphine and notify the provider",
+      "Apply supplemental oxygen and then administer the morphine"
+    ],
+    correct: 2,
+    rationale: "Opioids (morphine) cause respiratory depression. A respiratory rate of 10 (normal 12-20) and O2 sat of 92% indicate the client is already experiencing respiratory compromise. Administering morphine would worsen this and could be life-threatening. Hold the medication and notify the provider immediately. Have naloxone (Narcan) available.",
+    strategy: "OPIOID PARAMETERS: Hold if RR <12. Hold if O2 sat <95%. Have naloxone ready. Assess sedation level (POSS scale). Respiratory depression = PRIORITY concern."
+  },
+  {
+    id: 10, cat: "mgmt",
+    stem: "A nurse discovers that a colleague administered the wrong medication to a client. The client is stable and denies any symptoms. What is the nurse's PRIORITY action?",
+    options: [
+      "Complete an incident report",
+      "Assess the client and monitor for adverse effects",
+      "Notify the nursing supervisor",
+      "Document the medication error in the client's chart"
+    ],
+    correct: 1,
+    rationale: "Client safety is ALWAYS the first priority. Assessing the client and monitoring for adverse effects is the immediate priority. After client assessment and stability is confirmed, notify the provider, complete an incident report, and document in the chart. Incident reports are internal quality improvement documents and are NOT documented in the client's chart.",
+    strategy: "PRIORITY ORDER for medication errors: 1) Assess client 2) Notify provider 3) Notify supervisor 4) Complete incident report 5) Document in chart (NOT that incident report was filed)."
+  },
+  {
+    id: 11, cat: "physio",
+    stem: "A client who had a thyroidectomy 6 hours ago develops numbness and tingling around the mouth and carpopedal spasms. The nurse suspects hypocalcemia. Which finding would CONFIRM this complication?",
+    options: [
+      "Positive Homans' sign",
+      "Positive Chvostek's sign",
+      "Positive Babinski reflex",
+      "Positive McBurney's point"
+    ],
+    correct: 1,
+    rationale: "Chvostek's sign (facial muscle twitching when tapping the facial nerve near the ear) and Trousseau's sign (carpopedal spasm when BP cuff inflated >systolic for 3 minutes) are classic signs of hypocalcemia. After thyroidectomy, the parathyroid glands may be inadvertently removed or damaged, causing hypoparathyroidism → hypocalcemia. Have IV calcium gluconate at bedside.",
+    strategy: "POST-THYROIDECTOMY watch for: 1) Airway (stridor/swelling) 2) Hypocalcemia (Chvostek's/Trousseau's, tingling) 3) Thyroid storm. Keep calcium gluconate at bedside. HOB semi-Fowler's."
+  },
+  {
+    id: 12, cat: "safety",
+    stem: "A nurse is caring for a client who is mechanically ventilated and sedated. During suctioning, the client's oxygen saturation drops to 84% and the client becomes bradycardic. Which action should the nurse take FIRST?",
+    options: [
+      "Continue suctioning to clear the airway",
+      "Increase the FiO2 on the ventilator",
+      "Stop suctioning and hyperoxygenate the client",
+      "Notify the respiratory therapist"
+    ],
+    correct: 2,
+    rationale: "STOP suctioning immediately and provide hyperoxygenation (100% O2 for 30-60 seconds). Suctioning removes oxygen along with secretions and can cause hypoxia and vagal stimulation (causing bradycardia). Never suction for more than 10-15 seconds. Always hyperoxygenate before, during, and after suctioning.",
+    strategy: "SUCTIONING RULES: Max 10-15 seconds per pass. Hyperoxygenate BEFORE and AFTER. If O2 sat drops or bradycardia occurs → STOP and hyperoxygenate. Suction on WITHDRAWAL, not insertion."
+  },
+  {
+    id: 13, cat: "psycho",
+    stem: "A nurse is caring for a client with schizophrenia who states, 'The TV is sending me messages to hurt people.' Which nursing response is THERAPEUTIC?",
+    options: [
+      "\"The TV cannot send personal messages to anyone.\"",
+      "\"Tell me more about what you are experiencing.\"",
+      "\"Those messages aren't real – it's your illness talking.\"",
+      "\"Let's watch something different to take your mind off it.\""
+    ],
+    correct: 1,
+    rationale: "Using a non-confrontational, exploratory response ('Tell me more') allows the nurse to assess the extent of the delusion and any associated command hallucinations (which increase safety risk). Arguing about reality ('The TV cannot...') or dismissing delusions is non-therapeutic and increases agitation. The priority is to assess dangerousness while establishing therapeutic rapport.",
+    strategy: "SCHIZOPHRENIA/DELUSIONS: Do NOT argue, reinforce, or dismiss delusions. DO assess safety (command hallucinations?). DO use therapeutic communication. Safety first if command hallucinations present."
+  },
+  {
+    id: 14, cat: "pharma",
+    stem: "A nurse is teaching a client who has a new prescription for warfarin (Coumadin). Which statement by the client indicates a need for further teaching?",
+    options: [
+      "\"I will take aspirin if I get a headache.\"",
+      "\"I will report any unusual bleeding to my doctor.\"",
+      "\"I need to keep my vitamin K intake consistent.\"",
+      "\"I will tell my dentist I take blood thinners before any procedure.\""
+    ],
+    correct: 0,
+    rationale: "Aspirin (an antiplatelet drug) combined with warfarin (an anticoagulant) dramatically increases bleeding risk. The client should use acetaminophen (Tylenol) for pain relief, not aspirin or NSAIDs. Consistent vitamin K intake (leafy greens) is correct – sudden changes affect INR levels. Informing dental providers is correct.",
+    strategy: "WARFARIN TEACHING: No aspirin/NSAIDs (use Tylenol). Consistent vitamin K (don't eliminate, keep steady). Regular INR monitoring. Signs of bleeding. Wear medical alert bracelet. Antidote = Vitamin K."
+  },
+  {
+    id: 15, cat: "risk",
+    stem: "A nurse is caring for a client who had a percutaneous coronary intervention (PCI) via the right femoral artery 2 hours ago. The client reports feeling wet around the right groin dressing. What is the nurse's PRIORITY assessment?",
+    options: [
+      "Check blood pressure bilaterally",
+      "Assess the dressing site for bleeding or hematoma",
+      "Review the post-procedure orders",
+      "Check the client's coagulation studies"
+    ],
+    correct: 1,
+    rationale: "Feeling 'wet' around the femoral access site after PCI is a potential emergency – it suggests active bleeding or hematoma formation at the femoral artery puncture site. This can lead to massive hemorrhage. Priority: immediately assess the site. Apply firm manual pressure if bleeding, notify provider, keep the leg straight and immobile. Vital signs, coag studies follow assessment.",
+    strategy: "POST-PCI/CATH CARE: Keep affected extremity STRAIGHT for 2-6 hours. Check access site every 15 min x4, every 30 min x4. Report: bleeding, hematoma, absent pulse, limb coolness. Retroperitoneal bleed = back/flank pain, hypotension."
+  },
+  {
+    id: 16, cat: "basic",
+    stem: "A nurse is caring for a client with stage III pressure injury on the sacrum. Which intervention is MOST appropriate?",
+    options: [
+      "Massage the reddened area around the wound to improve circulation",
+      "Apply a wet-to-dry dressing and change every 8 hours",
+      "Use a moisture-retentive dressing to maintain a moist wound environment",
+      "Irrigate the wound with full-strength hydrogen peroxide daily"
+    ],
+    correct: 2,
+    rationale: "Moist wound healing is the current evidence-based standard. Moisture-retentive dressings (hydrocolloids, foams) promote granulation and epithelialization. Massaging reddened/broken areas INCREASES damage by further disrupting capillary blood flow. Wet-to-dry is non-selective debridement that also removes healthy tissue. Hydrogen peroxide is cytotoxic to wound tissue.",
+    strategy: "WOUND CARE: Moist environment = best healing. NEVER massage reddened bony prominences. Pressure injuries staged I-IV + unstageable + deep tissue. Reposition every 2 hours. Use pressure-reducing surfaces."
+  },
+  {
+    id: 17, cat: "mgmt",
+    stem: "A nurse is reviewing the rights of a client who is refusing a blood transfusion for religious reasons. The client is alert, oriented, and has decision-making capacity. Which action should the nurse take?",
+    options: [
+      "Obtain a court order to proceed with the transfusion",
+      "Contact the hospital ethics committee immediately",
+      "Document the refusal and respect the client's decision",
+      "Ask the family to convince the client to accept the transfusion"
+    ],
+    correct: 2,
+    rationale: "Competent adults have the legal and ethical RIGHT to refuse any medical treatment, including life-saving treatments, based on their values and religious beliefs. This is the principle of autonomy. The nurse must document the refusal, ensure the client is fully informed of consequences, and respect the decision. No court order can override a competent adult's refusal.",
+    strategy: "CLIENT RIGHTS: Competent adult can ALWAYS refuse treatment. Document refusal + that client was informed of consequences. Incompetent adults = surrogate decision-maker. Ethics committee = complex ethical dilemmas, not simple refusals."
+  },
+  {
+    id: 18, cat: "health",
+    stem: "A nurse is providing teaching to a client who is 28 weeks pregnant about signs that should be reported immediately. Which symptom is MOST concerning?",
+    options: [
+      "Increased urinary frequency",
+      "Braxton-Hicks contractions once or twice daily",
+      "Sudden swelling of the face and hands with headache",
+      "Mild lower back discomfort"
+    ],
+    correct: 2,
+    rationale: "Sudden facial/hand swelling with headache at 28 weeks are classic warning signs of preeclampsia. Preeclampsia (HTN + proteinuria after 20 weeks) can rapidly progress to eclampsia (seizures), HELLP syndrome, or stroke. This requires immediate evaluation. The other symptoms are normal pregnancy discomforts.",
+    strategy: "OB DANGER SIGNS (REMEMBER 'SUDDEN'): Sudden swelling face/hands, headache, visual changes = preeclampsia. Vaginal bleeding = placenta previa/abruption. Decreased fetal movement = fetal distress. Painful contractions before 37 weeks = preterm labor."
+  },
+  {
+    id: 19, cat: "physio",
+    stem: "A nurse is caring for a client with a chest tube following a pneumothorax. The nurse notes that the water-seal chamber has stopped fluctuating (tidaling). What is the correct interpretation?",
+    options: [
+      "The lung has fully re-expanded",
+      "There is a leak in the drainage system",
+      "The drainage system is functioning correctly",
+      "The chest tube is kinked or occluded"
+    ],
+    correct: 0,
+    rationale: "Cessation of fluctuation (tidaling) in the water-seal chamber can mean EITHER: (1) the lung has fully re-expanded (positive finding), OR (2) the tube is kinked/occluded. The nurse must assess the overall clinical picture (breath sounds, O2 sat, chest x-ray) to determine which cause. However, if the patient is improving and this is an expected progression, lung re-expansion is the most likely answer in NCLEX context.",
+    strategy: "CHEST TUBE: Tidaling=normal (fluctuates with breathing). Bubbling in water-seal=air leak (may be expected early). No tidaling=lung expanded OR tube kinked. Continuous bubbling in water seal=persistent air leak. Clamping=rarely done."
+  },
+  {
+    id: 20, cat: "risk",
+    stem: "A nurse is preparing to administer a blood transfusion. Fifteen minutes after starting the transfusion, the client develops chills, low back pain, and dark-colored urine. The nurse suspects a hemolytic reaction. What is the PRIORITY nursing action?",
+    options: [
+      "Slow the infusion rate to keep-vein-open",
+      "Stop the transfusion immediately and keep the IV line open with normal saline",
+      "Administer diphenhydramine IV as prescribed",
+      "Notify the blood bank and await further instructions"
+    ],
+    correct: 1,
+    rationale: "STOP the transfusion IMMEDIATELY – hemolytic reactions (incompatible blood type) can be fatal due to widespread hemolysis causing acute kidney failure, disseminated intravascular coagulation (DIC), and circulatory collapse. Keep the IV line open with NORMAL SALINE (not the blood tubing) to maintain IV access for emergency medications. Then notify provider, blood bank, and monitor vitals. Save the blood bag for analysis.",
+    strategy: "TRANSFUSION REACTIONS: ANY reaction = STOP transfusion first. Keep IV open with NS (not through blood tubing). Hemolytic (worst): low back pain, dark urine, fever. Febrile: chills, fever without back pain. Allergic: urticaria, pruritus. Anaphylactic: bronchospasm, hypotension."
+  }
+];
+
+const PRACTICE_TEST_QUESTIONS = [
+  {
+    id: 101, cat: "pharma", type: "mcq",
+    stem: "A client is prescribed lithium carbonate 300 mg TID for bipolar disorder. Which client statement indicates understanding of lithium therapy?",
+    options: ["I should limit my fluid intake to prevent toxicity","I need to maintain consistent sodium intake in my diet","I can stop the medication when I feel stable","I don't need blood tests since the dose is low"],
+    correct: 1,
+    rationale: "Lithium excretion competes with sodium in the kidneys. Low sodium diets cause lithium retention → toxicity. Consistent sodium intake keeps lithium levels stable. Therapeutic range: 0.6-1.2 mEq/L. Signs of toxicity: coarse tremors, confusion, vomiting (early), seizures, cardiac arrhythmias (late). Regular blood level monitoring is ESSENTIAL.",
+    strategy: "LITHIUM: Na+ depletion → lithium toxicity. Maintain adequate fluid (2-3L/day) and salt intake. Early toxicity: fine tremor, N/V, diarrhea. Late toxicity: coarse tremor, ataxia, confusion. Antidote: none – supportive care, dialysis for severe cases."
+  },
+  {
+    id: 102, cat: "physio", type: "sata",
+    stem: "A nurse is caring for a client in acute adrenal crisis (Addisonian crisis). Select ALL appropriate nursing interventions.",
+    options: [
+      "Administer IV hydrocortisone as prescribed",
+      "Provide a high-sodium, low-potassium diet",
+      "Place the client in Trendelenburg position",
+      "Monitor blood glucose levels frequently",
+      "Restrict IV fluid administration to prevent fluid overload",
+      "Obtain vital signs every 15 minutes"
+    ],
+    correct: [0, 1, 3, 5],
+    rationale: "Addisonian crisis: adrenal insufficiency with life-threatening hypotension, hypoglycemia, hyponatremia, hyperkalemia. IV hydrocortisone replaces deficient cortisol. High-sodium diet corrects hyponatremia. Monitor glucose (hypoglycemia common). Frequent VS (hypotension/shock). Trendelenburg is no longer recommended for shock. Large volumes of IV fluids WITH glucose ARE indicated (not restricted) to correct hypovolemia and hypoglycemia.",
+    strategy: "ADDISONIAN CRISIS: Na+ LOW, K+ HIGH, glucose LOW, BP LOW. Give: IV hydrocortisone, IV fluids with dextrose. Position: supine. Avoid stress/infection triggers."
+  },
+  {
+    id: 103, cat: "mgmt", type: "mcq",
+    stem: "A nurse is triaging four clients who arrive at the emergency department simultaneously. Which client should be seen FIRST?",
+    options: [
+      "A 45-year-old with ankle pain and mild swelling after a fall",
+      "A 28-year-old with chest pain radiating to the left arm and diaphoresis",
+      "A 67-year-old with a fever of 38.8°C (101.8°F) and productive cough",
+      "A 35-year-old with nausea, vomiting, and diarrhea for 24 hours"
+    ],
+    correct: 1,
+    rationale: "Chest pain radiating to the left arm with diaphoresis indicates a potential myocardial infarction – an immediately life-threatening emergency. This client is emergent (ESI level 1-2) and requires immediate assessment, ECG within 10 minutes, and possible cath lab activation. The other clients are urgent but stable.",
+    strategy: "TRIAGE PRIORITY: Airway/Breathing/Circulation problems ALWAYS first. MI symptoms = immediate. Use MAAUAR: Massive hemorrhage, Airway obstruction, Altered LOC, Unstable vitals, Acute MI, Respiratory distress."
+  },
+  {
+    id: 104, cat: "safety", type: "mcq",
+    stem: "A nurse is administering medications through a client's right arm peripheral IV. The client reports pain and burning at the IV site, and the nurse notes the surrounding skin is pale and cool. Which action should the nurse take FIRST?",
+    options: [
+      "Apply a warm compress to the site",
+      "Stop the infusion and discontinue the IV",
+      "Slow the infusion rate and continue monitoring",
+      "Elevate the extremity and reassess in 30 minutes"
+    ],
+    correct: 1,
+    rationale: "Pale, cool skin with pain and burning at an IV site indicates extravasation (leakage of vesicant medication into surrounding tissue) or infiltration. The infusion must be stopped IMMEDIATELY and the IV discontinued to prevent further tissue damage. The extent of injury depends on the medication – vesicants (chemotherapy, dopamine, calcium) can cause severe tissue necrosis.",
+    strategy: "INFILTRATION vs EXTRAVASATION: Both = stop infusion. Infiltration = non-vesicant fluid leaked. Extravasation = vesicant leaked = more serious, can cause tissue necrosis. Signs: pain, pallor, swelling, cool skin, slow/stopped infusion. Phlebitis = warm, red, streak."
+  },
+  {
+    id: 105, cat: "physio", type: "mcq",
+    stem: "A nurse is caring for a client with chronic kidney disease (CKD) stage 4. Which dietary instruction is MOST important?",
+    options: [
+      "Increase protein intake to 1.5 g/kg/day to maintain muscle mass",
+      "Restrict potassium intake and choose low-potassium foods",
+      "Encourage high-phosphorus foods to maintain bone density",
+      "Increase fluid intake to 3 liters per day to flush the kidneys"
+    ],
+    correct: 1,
+    rationale: "In CKD, kidneys cannot excrete potassium, leading to hyperkalemia (fatal cardiac arrhythmias). Potassium restriction is critical. Also restrict: phosphorus (causes bone disease), protein (reduces uremic waste), sodium (reduces fluid retention), and fluids. These restrictions become even more important as CKD progresses.",
+    strategy: "CKD DIET (4 restrictions): ↓K+ (no bananas, oranges, potatoes), ↓Phosphorus (no dairy, nuts, cola), ↓Protein (reduces BUN), ↓Sodium/Fluid. HIGH calorie from carbs/fats to spare protein."
+  },
+  {
+    id: 106, cat: "pharma", type: "mcq",
+    stem: "A nurse is caring for a client who received a dose of haloperidol (Haldol) 2 hours ago. The client now has a fixed upward gaze, neck twisted to one side, and is in obvious distress. Which medication should the nurse anticipate administering?",
+    options: [
+      "Naloxone (Narcan)",
+      "Benztropine (Cogentin)",
+      "Flumazenil (Romazicon)",
+      "Protamine sulfate"
+    ],
+    correct: 1,
+    rationale: "The client is experiencing acute dystonia – an extrapyramidal side effect (EPS) of antipsychotics. Symptoms include oculogyric crisis (fixed upward gaze), torticollis (neck twisting), and opisthotonus. Treatment: anticholinergic medications like benztropine (Cogentin) or diphenhydramine (Benadryl) IV/IM. Naloxone reverses opioids, flumazenil reverses benzodiazepines, protamine reverses heparin.",
+    strategy: "EPS from antipsychotics: 4 types: 1)Acute dystonia (hours-days) →antichoinergics 2)Akathisia (restlessness,days-weeks) →beta-blockers 3)Parkinsonism (weeks-months) →amantadine 4)Tardive dyskinesia (months-years, irreversible) →stop drug. ANTIDOTE for EPS = Benztropine or Diphenhydramine."
+  },
+  {
+    id: 107, cat: "risk", type: "sata",
+    stem: "A nurse is assessing a client who is 24 hours post-operative following abdominal surgery. Select ALL findings that should be reported to the surgeon IMMEDIATELY.",
+    options: [
+      "Temperature 38.1°C (100.6°F)",
+      "Urine output of 20 mL over the past 2 hours",
+      "Abdominal rigidity and guarding",
+      "Pain level 6/10 controlled with analgesics",
+      "Sudden increase in bright red drainage from the wound",
+      "Respiratory rate of 22 breaths/min"
+    ],
+    correct: [1, 2, 4],
+    rationale: "Critical findings: (1) Urine output 20 mL/2 hrs = oliguria (normal ≥30 mL/hr) → acute kidney injury or shock. (2) Abdominal rigidity/guarding = peritonitis, anastomotic leak, or bowel perforation – surgical emergency. (3) Sudden bright red drainage = active hemorrhage. Low-grade fever at 24 hours is normal ('wind' on post-op day 1-2). Pain controlled with analgesics is acceptable. RR 22 is slightly elevated but not critical in isolation.",
+    strategy: "POST-OP COMPLICATIONS by day: Day 1-2: Wind (atelectasis, fever). Day 3-5: Water (UTI, urine output). Day 5-7: Wound infection. Day 7+: Walking (DVT/PE). UO <30mL/hr = ALWAYS report. Bright red bleeding = ALWAYS report."
+  },
+  {
+    id: 108, cat: "health", type: "mcq",
+    stem: "A nurse is counseling a 52-year-old client about colorectal cancer screening. The client has no family history or risk factors. Which recommendation is MOST appropriate?",
+    options: [
+      "Annual fecal occult blood test starting at age 40",
+      "Colonoscopy every 10 years starting at age 50",
+      "CT colonography every 5 years starting at age 60",
+      "Flexible sigmoidoscopy every 3 years starting at age 55"
+    ],
+    correct: 1,
+    rationale: "Current guidelines (ACS, USPSTF) recommend colorectal cancer screening beginning at age 45 (updated from 50) for average-risk adults. Colonoscopy every 10 years is a preferred option for average-risk individuals. Annual high-sensitivity FOBT or FIT is also acceptable. The client at 52 with no risk factors should have had screening initiated at 45.",
+    strategy: "CANCER SCREENING: Colorectal→age 45, colonoscopy q10yr or FOBT annually. Breast→mammogram age 40-74, annually. Cervical→Pap smear age 21-65, q3yr (or q5yr Pap+HPV). Prostate→discuss at 50 (average risk). Lung→low-dose CT age 50-80 with smoking history."
+  },
+  {
+    id: 109, cat: "basic", type: "mcq",
+    stem: "A nurse is caring for a client who is post-operative following cataract surgery. Which instruction is MOST important to include in discharge teaching?",
+    options: [
+      "Wear an eye patch during the day for 2 weeks",
+      "Avoid bending at the waist, straining, or lifting more than 10 pounds",
+      "Apply ice packs to the eye for 20 minutes every hour",
+      "Resume all normal activities including swimming within 1 week"
+    ],
+    correct: 1,
+    rationale: "After cataract surgery, increased intraocular pressure (IOP) can disrupt the surgical repair and cause complications. Activities that increase IOP must be avoided: bending at the waist (below the waist), straining (Valsalva), lifting >10 lbs, sneezing/coughing forcefully, and constipation. The client should bend at the knees instead of the waist. Swimming is contraindicated for several weeks.",
+    strategy: "POST-EYE SURGERY: Avoid increases in IOP: no bending (waist), no straining/Valsalva, no heavy lifting, prevent constipation. Sleep on non-operative side or back. No rubbing eye. Report: sudden pain, vision changes, increased redness."
+  },
+  {
+    id: 110, cat: "psycho", type: "mcq",
+    stem: "A nurse is caring for a client who has anorexia nervosa with a current weight of 82 pounds (BMI 12.8). The client states, 'I'm actually fat – I need to lose more weight.' Which nursing response is BEST?",
+    options: [
+      "\"You are dangerously underweight. Look at yourself in the mirror.\"",
+      "\"I understand you feel that way. Let's focus on your nutrition plan for today.\"",
+      "\"You are not fat at all! Everyone thinks you look too thin.\"",
+      "\"Why do you think you need to lose more weight?\""
+    ],
+    correct: 1,
+    rationale: "Therapeutic response acknowledges the client's feelings without reinforcing the distorted body image or arguing. Redirecting to the current nutrition plan keeps focus on health behaviors rather than weight perception debates. Arguing ('You are not fat') or forcing reality confrontation is ineffective and can increase anxiety. Asking 'why' requires insight the client doesn't currently have.",
+    strategy: "ANOREXIA NERVOSA NURSING: Do NOT focus on food/weight debates. DO focus on behaviors and feelings. Establish trusting relationship. Monitor during meals (prevent hiding/throwing food). Weigh daily in AM with minimal clothing. Priority: Cardiac complications (bradycardia, arrhythmias), electrolyte imbalances."
+  },
+  {
+    id: 111, cat: "physio", type: "mcq",
+    stem: "A client with heart failure is receiving furosemide (Lasix) 40 mg IV. The nurse should monitor for which electrolyte imbalance MOST closely?",
+    options: ["Hypernatremia","Hyperkalemia","Hypokalemia","Hypercalcemia"],
+    correct: 2,
+    rationale: "Loop diuretics (furosemide/Lasix, bumetanide, ethacrynic acid) inhibit reabsorption of sodium AND potassium in the loop of Henle, causing potassium wasting. Hypokalemia is the primary concern. Dangerous because: (1) Potassium depletion increases risk of digoxin toxicity in clients on both drugs, (2) Causes cardiac arrhythmias. Monitor K+ levels and teach potassium-rich foods.",
+    strategy: "DIURETIC K+ EFFECTS: Loop diuretics (furosemide) = LOSE K+ (hypokalemia). Thiazides = LOSE K+. Potassium-sparing (spironolactone) = KEEP K+ (hyperkalemia risk). Remember: 'LOOPS LOSE, SPARES SPARE.'"
+  },
+  {
+    id: 112, cat: "safety", type: "mcq",
+    stem: "A nurse is preparing to perform a central line dressing change. What is the correct sequence of actions?",
+    options: [
+      "Gather supplies → Don sterile gloves → Remove old dressing → Clean site → Apply new dressing",
+      "Remove old dressing → Perform hand hygiene → Don sterile gloves → Clean site → Apply new dressing",
+      "Perform hand hygiene → Gather supplies → Remove old dressing with clean gloves → Don sterile gloves → Clean site → Apply new dressing",
+      "Don sterile gloves → Remove old dressing → Perform hand hygiene → Clean site → Apply new dressing"
+    ],
+    correct: 2,
+    rationale: "Central line dressing changes require sterile technique. Sequence: 1) Hand hygiene, 2) Gather all supplies, 3) Don clean gloves to remove old dressing (dirty procedure), 4) Perform hand hygiene again, 5) Don sterile gloves, 6) Clean site with chlorhexidine in circular motion outward, 7) Allow to dry completely, 8) Apply sterile transparent dressing. The site must dry completely before applying the dressing.",
+    strategy: "CENTRAL LINE CARE: Use sterile technique for dressing changes. Chlorhexidine (CHG) is preferred antiseptic. Change dressing: transparent q7 days, gauze q2 days or when soiled. Use maximum barrier precautions for insertion. Check catheter patency before each use."
+  },
+  {
+    id: 113, cat: "pharma", type: "mcq",
+    stem: "A nurse is preparing to administer insulin glargine (Lantus) to a client with type 1 diabetes. Which action is correct?",
+    options: [
+      "Mix the insulin with regular insulin for easier administration",
+      "Administer the insulin in the same subcutaneous site consistently",
+      "Administer the insulin at the same time each day",
+      "Shake the vial vigorously to ensure the insulin is well mixed"
+    ],
+    correct: 2,
+    rationale: "Insulin glargine (Lantus) is a long-acting insulin administered once daily at the SAME TIME each day to maintain consistent blood glucose levels. It should NEVER be mixed with other insulins (it's clear, not cloudy, and the acidic pH would alter its action). Do NOT shake insulin vials (causes denaturation) – gently roll. Rotate injection sites to prevent lipodystrophy.",
+    strategy: "INSULIN TYPES: Rapid (lispro/aspart): 15min onset. Short (regular): 30-60min, only IV insulin. Intermediate (NPH): cloudy, mix with regular. Long (glargine/detemir): clear, NEVER mix, once daily. Rotate sites. Hypoglycemia: give 15g fast carbs."
+  },
+  {
+    id: 114, cat: "mgmt", type: "mcq",
+    stem: "A nurse on a medical unit witnesses a client fall. After ensuring the client's safety, which action should be taken NEXT?",
+    options: [
+      "Complete an incident/variance report",
+      "Notify the client's family immediately",
+      "Perform a thorough assessment of the client",
+      "Review the client's fall risk assessment"
+    ],
+    correct: 2,
+    rationale: "After a fall, after ensuring immediate safety, the PRIORITY is a thorough head-to-toe assessment to identify any injuries (head injury, fractures). Assess LOC, pupil response, extremity movement, pain. Then notify provider, document in the chart, notify family (per protocol), complete incident report, and review/revise fall prevention plan.",
+    strategy: "POST-FALL ACTIONS: 1) Stay with client, call for help 2) Assess for injuries (especially head, hip fractures) 3) Check vital signs 4) Notify MD/provider 5) Notify family 6) Document in chart 7) Complete incident report (NOT in chart) 8) Review fall prevention plan."
+  },
+  {
+    id: 115, cat: "risk", type: "mcq",
+    stem: "A client with a history of seizures has a tonic-clonic seizure while in the hospital bed. Which nursing action is the PRIORITY during the seizure?",
+    options: [
+      "Insert an oral airway to prevent airway obstruction",
+      "Restrain the client to prevent injury",
+      "Turn the client to the side and protect the head",
+      "Administer prescribed rescue medication immediately"
+    ],
+    correct: 2,
+    rationale: "During a tonic-clonic seizure: 1) Do NOT restrain (causes fractures), 2) Do NOT insert anything in the mouth (causes dental trauma, nurse injury), 3) Turn to LATERAL (recovery) position to prevent aspiration and maintain airway, 4) Protect the head with something soft, 5) Clear the area of hard objects, 6) Time the seizure. Administer rescue medication per protocol AFTER ensuring safety.",
+    strategy: "SEIZURE SAFETY: Do NOT restrain. Do NOT insert anything in mouth (myth debunked). DO: turn lateral, protect head, time seizure, stay with client. POST-ICTAL: O2, VS, neuro check, document. Prolonged >5 min = status epilepticus (emergency)."
+  },
+  {
+    id: 116, cat: "physio", type: "mcq",
+    stem: "A nurse is assessing a client with increased intracranial pressure (ICP). Which finding indicates Cushing's Triad, a late sign of dangerously elevated ICP?",
+    options: [
+      "Tachycardia, hypotension, and tachypnea",
+      "Bradycardia, hypertension with widened pulse pressure, and irregular respirations",
+      "Tachycardia, hypertension, and deep regular respirations",
+      "Bradycardia, hypotension, and Cheyne-Stokes respirations"
+    ],
+    correct: 1,
+    rationale: "Cushing's Triad is a LATE and ominous sign of severely elevated ICP, indicating imminent brain herniation: (1) Bradycardia (not tachycardia), (2) Hypertension with widened pulse pressure (systolic rises, diastolic stays same or drops), (3) Irregular respirations. This is a neurological emergency requiring immediate intervention.",
+    strategy: "INCREASED ICP: Early signs: headache, N/V, altered LOC, pupil changes. Late (Cushing's Triad): Bradycardia + HTN (wide pulse pressure) + Irregular respirations = BRAIN HERNIATION IMMINENT. HOB 30-45°, neutral neck, avoid hypercapnia, avoid Valsalva."
+  },
+  {
+    id: 117, cat: "health", type: "mcq",
+    stem: "A nurse is educating a 25-year-old female client about the HPV vaccine. Which statement is ACCURATE?",
+    options: [
+      "The vaccine treats existing HPV infections",
+      "The vaccine should only be given to females under 18",
+      "The vaccine is most effective when given before sexual activity begins",
+      "The vaccine eliminates the need for routine cervical cancer screening"
+    ],
+    correct: 2,
+    rationale: "The HPV vaccine (Gardasil 9) is PREVENTIVE, not therapeutic – it does not treat existing infections. It is most effective when administered before exposure to HPV through sexual activity (recommended 11-12 years, can start at 9). It is now approved for both males AND females up to age 26 routinely, and 27-45 with shared decision-making. Pap smears/cervical screening are still needed even after vaccination.",
+    strategy: "HPV VACCINE: Preventive (not treatment). Best before sexual activity. Ages 11-12 (routine), up to 26 (catch-up), 27-45 (discuss). Does NOT eliminate need for Pap smears. Prevents HPV types 16,18 (cancer), 6,11 (genital warts)."
+  },
+  {
+    id: 118, cat: "basic", type: "mcq",
+    stem: "A nurse is caring for a client who had a spinal cord injury at the T4 level. The client suddenly develops a severe headache (rated 9/10), profuse diaphoresis above the level of the injury, and a blood pressure of 192/104 mmHg. What should the nurse do FIRST?",
+    options: [
+      "Administer the prescribed antihypertensive medication",
+      "Sit the client upright and check for a full bladder or bowel",
+      "Apply supplemental oxygen and notify the physician",
+      "Assess neurological status including pupil response"
+    ],
+    correct: 1,
+    rationale: "This is autonomic dysreflexia – a hypertensive emergency in clients with SCI at T6 or above. FIRST action: sit the client UPRIGHT (lowers BP immediately by orthostatic mechanism) and find/remove the trigger. Most common triggers: distended bladder (80%), impacted bowel, pressure ulcer, tight clothing. Trigger removal is the definitive treatment. If BP doesn't resolve after trigger removal, antihypertensives are given.",
+    strategy: "AUTONOMIC DYSREFLEXIA: SCI at/above T6. Signs: severe HA, diaphoresis ABOVE injury, flushing, hypertension (life-threatening), bradycardia. FIRST: sit upright, find trigger (usually full bladder). Remove trigger. Antihypertensives if needed. MEDICAL EMERGENCY."
+  },
+  {
+    id: 119, cat: "pharma", type: "mcq",
+    stem: "A client with tuberculosis (TB) is started on isoniazid (INH). Which supplement should the nurse anticipate administering concurrently?",
+    options: ["Vitamin C","Vitamin B6 (pyridoxine)","Calcium carbonate","Folic acid"],
+    correct: 1,
+    rationale: "Isoniazid (INH) inhibits the metabolism of pyridoxine (Vitamin B6), causing peripheral neuropathy (numbness, tingling in hands/feet). Pyridoxine supplementation is routinely given with INH to prevent this side effect. Also monitor: hepatotoxicity (avoid alcohol, monitor LFTs), red-orange body secretions (seen with rifampin, not INH). Take INH on empty stomach for best absorption.",
+    strategy: "TB DRUGS (RIPE): Rifampin (red-orange secretions, enzyme inducer), Isoniazid (peripheral neuropathy → give B6, hepatotoxic), Pyrazinamide (hepatotoxic, hyperuricemia), Ethambutol (optic neuritis → check vision). INH + B6 always together."
+  },
+  {
+    id: 120, cat: "mgmt", type: "mcq",
+    stem: "A nurse receives a SBAR report about an incoming client. The physician gives a telephone order: 'Give 10 units of regular insulin IV push now.' What is the nurse's BEST response?",
+    options: [
+      "Administer the insulin as ordered",
+      "Refuse to administer IV push insulin as it is not in the formulary",
+      "Read back the order: 'You are ordering 10 units of regular insulin IV push now, correct?'",
+      "Ask a colleague to double-check the order before administering"
+    ],
+    correct: 2,
+    rationale: "For telephone/verbal orders, the nurse must use the 'SBAR read-back' technique: write down the order, then read it back completely to the prescriber for confirmation. This is a JCAHO/TJC national patient safety goal. All verbal/telephone orders must be read back verbatim and confirmed. High-alert medications (insulin, heparin, concentrated electrolytes) require extra verification.",
+    strategy: "VERBAL/TELEPHONE ORDERS: Write it down → Read it back completely → Get confirmation ('Yes, that is correct'). Document as T.O. (telephone order) or V.O. (verbal order). Provider must co-sign within 24 hours (per institution). High-alert meds = ALWAYS read-back."
+  }
+];
+
+const STRATEGY_CONTENT = [
+  {
+    title: "The NCLEX Decision Tree",
+    icon: "🌳",
+    content: `When answering ANY NCLEX question, follow this hierarchy:
+    
+1. Is this an ABCs question? (Airway, Breathing, Circulation) → Prioritize in that order
+2. Is this a safety issue? → Safety always trumps comfort
+3. Use Maslow's Hierarchy: Physiological → Safety → Love/Belonging → Esteem → Self-Actualization
+4. Apply the Nursing Process: Assessment → Diagnosis → Planning → Implementation → Evaluation
+5. Delegation: RN does complex/unstable; LPN does stable/routine; UAP does basic ADLs`,
+    color: "#0891b2"
+  },
+  {
+    title: "The S.A.T.A. Master Strategy",
+    icon: "☑️",
+    content: `Select All That Apply – treat each option as TRUE or FALSE independently.
+
+HACK: Cover the other options. Ask: "Is this option ALWAYS true for this condition?"
+• 2-3 are usually correct (rarely all 5 or just 1)
+• Look for absolute words: "always/never" = usually false
+• Look for safety-related options = usually true
+• Don't overthink – if you know it's correct, pick it
+• Medical-surgical patterns: vitals, labs, positioning, education`,
+    color: "#7c3aed"
+  },
+  {
+    title: "NGN Clinical Judgment Strategy",
+    icon: "🧠",
+    content: `Next Generation NCLEX (NGN) uses 6-step Clinical Judgment Model:
+
+1. RECOGNIZE CUES → What data is abnormal? What matters?
+2. ANALYZE CUES → What do these cues mean together?
+3. PRIORITIZE HYPOTHESES → Most likely diagnosis?
+4. GENERATE SOLUTIONS → What interventions are evidence-based?
+5. TAKE ACTIONS → Implement in priority order
+6. EVALUATE OUTCOMES → Did the intervention work?
+
+NGN Question Types: Bow-tie (causes/actions/outcomes), Matrix (multiple conditions), Extended drag-and-drop, Trend (vitals over time)`,
+    color: "#dc2626"
+  },
+  {
+    title: "California BRN Fast-Track",
+    icon: "🌅",
+    content: `California Board of Registered Nursing (BRN) Requirements:
+
+1. Apply at BRN website (breeze.ca.gov)
+2. Submit fingerprints (LiveScan)
+3. Submit official transcripts directly from nursing school
+4. Pay licensing fee (~$100-150)
+5. Receive ATT (Authorization to Test) from Pearson VUE
+6. Schedule NCLEX at Pearson VUE center in CA
+7. Results via California Quick Results (48 hrs, ~$8) or BRN license verification
+
+TIMELINE: Application to ATT typically 3-8 weeks in CA. Process can be expedited with complete application.`,
+    color: "#b45309"
+  },
+  {
+    title: "Lab Values Cheat Sheet",
+    icon: "🧪",
+    content: `CRITICAL LAB VALUES TO MEMORIZE:
+
+Sodium (Na+): 135-145 | <120 or >155 = critical
+Potassium (K+): 3.5-5.0 | <3.0 or >6.0 = critical
+Glucose: 70-110 | <50 or >500 = critical
+Hemoglobin: M:13.5-17.5 | F:12-16 g/dL
+Hematocrit: M:41-53% | F:36-46%
+Platelets: 150,000-400,000 | <50,000 = bleeding risk
+INR: 0.8-1.1 | Therapeutic: 2-3
+PTT/aPTT: 60-70 sec | Therapeutic heparin: 1.5-2.5x normal
+BUN: 10-20 mg/dL | Creatinine: 0.6-1.2 mg/dL
+pH: 7.35-7.45 | PaCO2: 35-45 | HCO3: 22-26`,
+    color: "#166534"
+  },
+  {
+    title: "Test-Day Execution Plan",
+    icon: "🎯",
+    content: `EXAM DAY STRATEGIES:
+
+BEFORE: Sleep 8 hours. Eat protein breakfast. Arrive 30 min early.
+DURING:
+• Read the question stem LAST – read options first, then stem
+• Identify the SUBJECT of the question (who/what are we treating?)
+• Look for keywords: immediate, first, priority, best, most appropriate
+• Eliminate 2 options, choose best of remaining 2
+• Never change an answer unless you have a definitive reason
+• Flag questions taking >2 minutes and return later
+TIME: ~85-150 questions, 5-hour limit. Pace = ~2 min/question.
+PANIC HACK: If unsure, ask "What is safest for the patient right now?"`,
+    color: "#0e7490"
+  }
+];
+
+const WEEKLY_PLAN = {
+  weak: {
+    pharma: [
+      { day: "Mon", focus: "Pharmacology: Cardiovascular drugs (digoxin, antihypertensives, antiarrhythmics)", tasks: ["Complete 25 pharm questions", "Review cardiac drug parameters", "Make flashcards: hold parameters"], hours: 4 },
+      { day: "Tue", focus: "Pharmacology: Antibiotics, Antifungals, TB medications", tasks: ["Memorize RIPE TB drugs + side effects", "Practice 25 anti-infective questions", "Review C. diff and isolation"], hours: 4 },
+      { day: "Wed", focus: "Pharmacology: Psych medications (antipsychotics, antidepressants, mood stabilizers)", tasks: ["EPS types and antidotes", "Lithium toxicity parameters", "25 psych pharm questions"], hours: 4 },
+      { day: "Thu", focus: "Pharmacology: Endocrine drugs (insulin types, thyroid, steroids)", tasks: ["Draw insulin onset/peak/duration chart", "25 endocrine pharm questions", "Review diabetic emergencies"], hours: 4 },
+      { day: "Fri", focus: "Pharmacology: Pain management + Review all pharm topics", tasks: ["Opioid parameters and Narcan", "Full 75-question pharm practice test", "Review all wrong answers"], hours: 5 },
+      { day: "Sat", focus: "Mixed practice + weak area reinforcement", tasks: ["100-question mixed NCLEX practice", "Review all rationales", "Active recall quiz"], hours: 5 },
+      { day: "Sun", focus: "Rest + Light review", tasks: ["Flashcard review (30 min)", "Rest and self-care", "Prepare for next week"], hours: 1 }
+    ],
+    physio: [
+      { day: "Mon", focus: "Physiological Adaptation: Cardiac emergencies (MI, CHF, dysrhythmias)", tasks: ["Review 12-lead basics", "25 cardiac adaptation questions", "Memorize Cushing's triad"], hours: 4 },
+      { day: "Tue", focus: "Physiological Adaptation: Respiratory disorders (ARDS, pneumonia, COPD)", tasks: ["Ventilator management basics", "25 respiratory questions", "O2 therapy guidelines"], hours: 4 },
+      { day: "Wed", focus: "Physiological Adaptation: Neurological emergencies (stroke, ICP, seizures)", tasks: ["FAST stroke assessment", "25 neuro questions", "Increased ICP nursing care"], hours: 4 },
+      { day: "Thu", focus: "Physiological Adaptation: Endocrine crises (DKA, HHS, Addisonian, thyroid storm)", tasks: ["Compare DKA vs HHS", "25 endocrine adaptation questions", "Review electrolyte shifts"], hours: 4 },
+      { day: "Fri", focus: "Physiological Adaptation: Renal/GI emergencies + review", tasks: ["AKI vs CKD comparison", "75 physio questions", "Review all rationales"], hours: 5 },
+      { day: "Sat", focus: "Full practice NCLEX + Analysis", tasks: ["100-question full NCLEX practice", "Category analysis", "Focus reinforcement"], hours: 5 },
+      { day: "Sun", focus: "Rest + Concept mapping", tasks: ["Create condition comparison charts", "Rest", "Prepare week 2"], hours: 1 }
+    ]
+  }
+};
+
+const NGNTIPS = [
+  { type: "Bow-Tie Questions", desc: "Central condition with causes on left and nursing actions/outcomes on right. Think: What caused this? What do I do? What should happen?", color: "#0891b2" },
+  { type: "Matrix/Grid", desc: "Multiple clients or conditions with multiple interventions. Evaluate each cell independently. Look for patterns in abnormal findings.", color: "#7c3aed" },
+  { type: "Trend Questions", desc: "Serial vital signs or lab values over time. Identify the trajectory – is the client improving or deteriorating? What changed?", color: "#dc2626" },
+  { type: "Extended Drag-and-Drop", desc: "Put items in order of priority or match items to categories. Use nursing process and priority frameworks (ABCs, Maslow).", color: "#b45309" },
+  { type: "Highlight Text", desc: "Find relevant clinical cues in a passage. Look for abnormal values, sudden changes, safety risks. Highlight conservatively – only what's clearly abnormal.", color: "#166534" },
+  { type: "Drop-Down Menus", desc: "Select the correct term/action from a dropdown within a sentence. Read the entire sentence for context before selecting.", color: "#0d9488" }
+];
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+
+const ProgressBar = ({ value, max, color }) => (
+  <div style={{ background: "#e5e7eb", borderRadius: 999, height: 8, overflow: "hidden" }}>
+    <div style={{ width: `${(value / max) * 100}%`, background: color, height: "100%", borderRadius: 999, transition: "width 0.6s ease" }} />
+  </div>
+);
+
+const Badge = ({ children, color = "#0891b2" }) => (
+  <span style={{ background: color + "22", color, border: `1px solid ${color}44`, borderRadius: 999, padding: "2px 10px", fontSize: 11, fontWeight: 700, letterSpacing: 0.5 }}>
+    {children}
+  </span>
+);
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+
+function NCLEXPrep() {
+  const [tab, setTab] = useState("home");
+  const [diagnosisState, setDiagnosisState] = useState({ started: false, qIndex: 0, answers: {}, done: false, scores: {} });
+  const [practiceState, setPracticeState] = useState({ started: false, qIndex: 0, answers: {}, done: false, showResult: null });
+  const [selectedPracticeQ, setSelectedPracticeQ] = useState(null);
+  const [weakArea, setWeakArea] = useState(null);
+
+  // ── SCORE CALCULATOR ─────────────────────────────────
+  const calcDiagScores = (answers) => {
+    const scores = {};
+    CATEGORIES.forEach(c => { scores[c.id] = { correct: 0, total: 0 }; });
+    DIAGNOSTIC_QUESTIONS.forEach(q => {
+      if (answers[q.id] !== undefined) {
+        scores[q.cat].total++;
+        if (answers[q.id] === q.correct) scores[q.cat].correct++;
+      }
+    });
+    return scores;
+  };
+
+  const finishDiag = (answers) => {
+    const scores = calcDiagScores(answers);
+    setDiagnosisState(s => ({ ...s, done: true, scores }));
+    let worst = null, worstPct = 1;
+    Object.entries(scores).forEach(([id, v]) => {
+      if (v.total > 0) {
+        const pct = v.correct / v.total;
+        if (pct < worstPct) { worstPct = pct; worst = id; }
+      }
+    });
+    setWeakArea(worst);
+    setTab("plan");
+  };
+
+  // ── HOME TAB ──────────────────────────────────────────
+  const HomeTab = () => (
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
+      {/* Hero */}
+      <div style={{ background: "linear-gradient(135deg, #0c4a6e 0%, #0891b2 60%, #06b6d4 100%)", borderRadius: 20, padding: "40px 36px", marginBottom: 28, color: "#fff", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", right: -30, top: -30, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
+        <div style={{ position: "absolute", right: 60, bottom: -60, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
+          <span style={{ fontSize: 40 }}>🏥</span>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, opacity: 0.7, textTransform: "uppercase" }}>California NCLEX Prep</div>
+            <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, lineHeight: 1.1 }}>Pass NCLEX-RN Fast</h1>
+          </div>
+        </div>
+        <p style={{ margin: "0 0 24px", opacity: 0.9, fontSize: 16, maxWidth: 520, lineHeight: 1.6 }}>
+          Next Generation NCLEX (NGN) prep with diagnostics, practice tests, clinical judgment strategies, and a personalized weekly study plan.
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {[["📋 Diagnostic Test", "diag"], ["📝 Practice Tests", "practice"], ["🎯 Strategies", "strategy"], ["📅 Study Plan", "plan"], ["🌅 California Guide", "california"], ["🧠 NGN Guide", "ngn"]].map(([label, t]) => (
+            <button key={t} onClick={() => setTab(t)} style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: 10, padding: "10px 18px", cursor: "pointer", fontWeight: 600, fontSize: 14, backdropFilter: "blur(4px)", transition: "all 0.2s" }}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats Row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
+        {[
+          { label: "Practice Questions", value: "150+", icon: "❓", color: "#0891b2" },
+          { label: "NCLEX Categories", value: "8", icon: "📚", color: "#7c3aed" },
+          { label: "Study Strategies", value: "20+", icon: "🎯", color: "#dc2626" },
+          { label: "NGN Question Types", value: "6", icon: "🧠", color: "#b45309" }
+        ].map(s => (
+          <div key={s.label} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: "18px 16px", textAlign: "center", boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize: 28, marginBottom: 6 }}>{s.icon}</div>
+            <div style={{ fontSize: 26, fontWeight: 800, color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Category Overview */}
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 24 }}>
+        <h2 style={{ margin: "0 0 18px", fontSize: 18, fontWeight: 700, color: "#111827" }}>📊 NCLEX Client Needs Categories</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          {CATEGORIES.map(c => (
+            <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "#f9fafb", borderRadius: 10, border: `1px solid ${c.color}22` }}>
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: c.color, flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{c.label}</div>
+                <div style={{ fontSize: 11, color: "#6b7280" }}>{c.pct} of exam</div>
+              </div>
+              <Badge color={c.color}>{c.pct}</Badge>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Start */}
+      <div style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", border: "1px solid #f59e0b44", borderRadius: 16, padding: 22 }}>
+        <h3 style={{ margin: "0 0 10px", color: "#92400e", fontWeight: 700 }}>⚡ Quick Start Guide</h3>
+        <ol style={{ margin: 0, paddingLeft: 20, color: "#78350f", lineHeight: 2 }}>
+          <li><strong>Take the Diagnostic Test</strong> → Identifies your weakest categories</li>
+          <li><strong>Get your Personalized Study Plan</strong> → Week-by-week roadmap</li>
+          <li><strong>Study Strategies</strong> → Learn NCLEX-specific test-taking tactics</li>
+          <li><strong>Practice Tests</strong> → 20 diagnostic + 20 full practice questions with rationales</li>
+          <li><strong>NGN Guide</strong> → Master new question formats</li>
+          <li><strong>California Guide</strong> → Complete BRN licensing steps</li>
+        </ol>
+      </div>
+    </div>
+  );
+
+  // ── DIAGNOSTIC TAB ────────────────────────────────────
+  const DiagTab = () => {
+    const { started, qIndex, answers, done, scores } = diagnosisState;
+
+    if (done) {
+      const totalCorrect = Object.values(scores).reduce((a, v) => a + v.correct, 0);
+      const totalQ = DIAGNOSTIC_QUESTIONS.length;
+      const pct = Math.round((totalCorrect / totalQ) * 100);
+      const overallColor = pct >= 70 ? "#166534" : pct >= 50 ? "#b45309" : "#dc2626";
+
+      return (
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 32, marginBottom: 20 }}>
+            <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}>🎯 Diagnostic Results</h2>
+            <p style={{ color: "#6b7280", margin: "0 0 24px" }}>Here's your personalized analysis. Use this to guide your study plan.</p>
+            
+            <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 28, padding: "20px 24px", background: "#f9fafb", borderRadius: 14 }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 52, fontWeight: 900, color: overallColor, lineHeight: 1 }}>{pct}%</div>
+                <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>{totalCorrect}/{totalQ} Correct</div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <ProgressBar value={totalCorrect} max={totalQ} color={overallColor} />
+                <div style={{ marginTop: 10, fontSize: 14, color: "#374151" }}>
+                  {pct >= 70 ? "✅ Good foundation! Focus on weaker areas." : pct >= 50 ? "⚠️ Needs work – prioritize weak categories." : "🚨 Intensive review needed across all areas."}
+                </div>
+              </div>
+            </div>
+
+            <h3 style={{ margin: "0 0 14px", fontSize: 16, fontWeight: 700 }}>Category Breakdown</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+              {CATEGORIES.map(cat => {
+                const s = scores[cat.id] || { correct: 0, total: 0 };
+                if (s.total === 0) return null;
+                const p = Math.round((s.correct / s.total) * 100);
+                return (
+                  <div key={cat.id} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 180, fontSize: 13, fontWeight: 500, color: "#374151", flexShrink: 0 }}>{cat.label}</div>
+                    <div style={{ flex: 1 }}><ProgressBar value={s.correct} max={s.total} color={p >= 70 ? "#166534" : p >= 50 ? "#b45309" : "#dc2626"} /></div>
+                    <div style={{ width: 60, textAlign: "right", fontWeight: 700, fontSize: 14, color: p >= 70 ? "#166534" : p >= 50 ? "#b45309" : "#dc2626" }}>{p}%</div>
+                    <div style={{ width: 40, fontSize: 12, color: "#9ca3af" }}>{s.correct}/{s.total}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {weakArea && (
+              <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontWeight: 700, color: "#dc2626", marginBottom: 4 }}>🎯 Priority Focus Area</div>
+                <div style={{ color: "#7f1d1d" }}>
+                  Your weakest area is <strong>{CATEGORIES.find(c => c.id === weakArea)?.label}</strong>. Your personalized study plan has been updated to prioritize this.
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: 12 }}>
+              <button onClick={() => setTab("plan")} style={{ flex: 1, background: "#0891b2", color: "#fff", border: "none", borderRadius: 10, padding: "14px", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
+                📅 View My Study Plan
+              </button>
+              <button onClick={() => setDiagnosisState({ started: false, qIndex: 0, answers: {}, done: false, scores: {} })} style={{ background: "#f3f4f6", color: "#374151", border: "1px solid #e5e7eb", borderRadius: 10, padding: "14px 20px", fontWeight: 600, cursor: "pointer" }}>
+                Retake
+              </button>
+            </div>
+          </div>
+
+          {/* Answer Review */}
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 24 }}>
+            <h3 style={{ margin: "0 0 18px", fontSize: 17, fontWeight: 700 }}>📖 Answer Review & Rationales</h3>
+            {DIAGNOSTIC_QUESTIONS.map((q, i) => {
+              const userAns = answers[q.id];
+              const isCorrect = userAns === q.correct;
+              return (
+                <div key={q.id} style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 18, marginBottom: 18 }}>
+                  <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
+                    <span style={{ fontWeight: 700, color: "#6b7280", fontSize: 13 }}>Q{i + 1}</span>
+                    <span style={{ fontSize: 12 }}>{isCorrect ? "✅" : "❌"}</span>
+                    <Badge color={CATEGORIES.find(c => c.id === q.cat)?.color}>{CATEGORIES.find(c => c.id === q.cat)?.label}</Badge>
+                  </div>
+                  <p style={{ margin: "0 0 10px", fontSize: 14, color: "#374151", fontWeight: 500 }}>{q.stem}</p>
+                  {!isCorrect && (
+                    <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 6 }}>
+                      Your answer: <span style={{ color: "#dc2626", fontWeight: 600 }}>{q.options[userAns] ?? "Not answered"}</span>
+                    </div>
+                  )}
+                  <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 8 }}>
+                    Correct: <span style={{ color: "#166534", fontWeight: 600 }}>{q.options[q.correct]}</span>
+                  </div>
+                  <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#166534", lineHeight: 1.6 }}>
+                    <strong>💡 Rationale:</strong> {q.rationale}
+                  </div>
+                  <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "8px 14px", marginTop: 8, fontSize: 12, color: "#1e40af" }}>
+                    <strong>🎯 Strategy:</strong> {q.strategy}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    if (!started) {
+      return (
+        <div style={{ maxWidth: 700, margin: "0 auto" }}>
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 36, textAlign: "center" }}>
+            <div style={{ fontSize: 60, marginBottom: 16 }}>🔬</div>
+            <h2 style={{ margin: "0 0 12px", fontSize: 26, fontWeight: 800 }}>NCLEX Diagnostic Assessment</h2>
+            <p style={{ color: "#6b7280", fontSize: 16, marginBottom: 24, lineHeight: 1.6, maxWidth: 480, margin: "0 auto 24px" }}>
+              20 carefully selected questions covering all 8 NCLEX content areas. This assessment identifies your weak areas and generates a personalized study plan.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, maxWidth: 400, margin: "0 auto 28px", textAlign: "left" }}>
+              {[["📝 20 Questions", "All 8 content areas"], ["⏱️ ~30 minutes", "Untimed, take your time"], ["📊 Instant Results", "Category-by-category analysis"], ["🗺️ Custom Plan", "Personalized week-by-week plan"]].map(([t, d]) => (
+                <div key={t} style={{ background: "#f9fafb", borderRadius: 10, padding: "12px 14px" }}>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>{t}</div>
+                  <div style={{ fontSize: 12, color: "#6b7280" }}>{d}</div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setDiagnosisState(s => ({ ...s, started: true }))} style={{ background: "linear-gradient(135deg, #0891b2, #06b6d4)", color: "#fff", border: "none", borderRadius: 12, padding: "16px 40px", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
+              Start Diagnostic Test →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const q = DIAGNOSTIC_QUESTIONS[qIndex];
+    const answered = diagnosisState.answers[q.id] !== undefined;
+
+    return (
+      <div style={{ maxWidth: 700, margin: "0 auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>Question {qIndex + 1} of {DIAGNOSTIC_QUESTIONS.length}</div>
+          <Badge color={CATEGORIES.find(c => c.id === q.cat)?.color}>{CATEGORIES.find(c => c.id === q.cat)?.label}</Badge>
+        </div>
+        <ProgressBar value={qIndex} max={DIAGNOSTIC_QUESTIONS.length} color="#0891b2" />
+        
+        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 28, marginTop: 16 }}>
+          <p style={{ fontSize: 17, fontWeight: 600, color: "#111827", lineHeight: 1.6, margin: "0 0 24px" }}>{q.stem}</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {q.options.map((opt, i) => {
+              const isSelected = diagnosisState.answers[q.id] === i;
+              const isCorrect = i === q.correct;
+              let bg = "#f9fafb", border = "#e5e7eb", color = "#374151";
+              if (answered) {
+                if (isCorrect) { bg = "#f0fdf4"; border = "#22c55e"; color = "#166534"; }
+                else if (isSelected && !isCorrect) { bg = "#fef2f2"; border = "#ef4444"; color = "#dc2626"; }
+              } else if (isSelected) { bg = "#eff6ff"; border = "#3b82f6"; color = "#1e40af"; }
+
+              return (
+                <button key={i} disabled={answered}
+                  onClick={() => setDiagnosisState(s => ({ ...s, answers: { ...s.answers, [q.id]: i } }))}
+                  style={{ background: bg, border: `2px solid ${border}`, borderRadius: 10, padding: "14px 18px", textAlign: "left", cursor: answered ? "default" : "pointer", color, fontWeight: 500, fontSize: 15, lineHeight: 1.5, transition: "all 0.15s" }}>
+                  <span style={{ fontWeight: 700, marginRight: 8 }}>{String.fromCharCode(65 + i)}.</span>{opt}
+                  {answered && isCorrect && <span style={{ float: "right" }}>✅</span>}
+                  {answered && isSelected && !isCorrect && <span style={{ float: "right" }}>❌</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {answered && (
+            <div style={{ marginTop: 20 }}>
+              <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "14px 18px", marginBottom: 10, fontSize: 14, color: "#166534", lineHeight: 1.7 }}>
+                <strong>💡 Rationale:</strong> {q.rationale}
+              </div>
+              <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 10, padding: "12px 18px", fontSize: 13, color: "#1e40af" }}>
+                <strong>🎯 NCLEX Strategy:</strong> {q.strategy}
+              </div>
+              <button
+                onClick={() => {
+                  if (qIndex < DIAGNOSTIC_QUESTIONS.length - 1) {
+                    setDiagnosisState(s => ({ ...s, qIndex: s.qIndex + 1 }));
+                  } else {
+                    finishDiag(diagnosisState.answers);
+                  }
+                }}
+                style={{ marginTop: 16, width: "100%", background: "#0891b2", color: "#fff", border: "none", borderRadius: 10, padding: "14px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>
+                {qIndex < DIAGNOSTIC_QUESTIONS.length - 1 ? "Next Question →" : "View My Results 🎉"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ── PRACTICE TAB ──────────────────────────────────────
+  const PracticeTab = () => {
+    const { started, qIndex, answers, done } = practiceState;
+
+    if (done) {
+      const total = PRACTICE_TEST_QUESTIONS.length;
+      const correct = PRACTICE_TEST_QUESTIONS.filter(q => {
+        const a = answers[q.id];
+        if (Array.isArray(q.correct)) return Array.isArray(a) && q.correct.every(c => a.includes(c)) && a.every(c => q.correct.includes(c));
+        return a === q.correct;
+      }).length;
+      const pct = Math.round((correct / total) * 100);
+
+      return (
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 28, marginBottom: 20, textAlign: "center" }}>
+            <div style={{ fontSize: 50 }}>{pct >= 70 ? "🏆" : pct >= 50 ? "📈" : "💪"}</div>
+            <h2 style={{ margin: "8px 0 4px", fontSize: 26, fontWeight: 800 }}>Practice Test Complete!</h2>
+            <div style={{ fontSize: 52, fontWeight: 900, color: pct >= 70 ? "#166534" : pct >= 50 ? "#b45309" : "#dc2626", margin: "12px 0 4px" }}>{pct}%</div>
+            <div style={{ color: "#6b7280", marginBottom: 24 }}>{correct} of {total} correct</div>
+            <ProgressBar value={correct} max={total} color={pct >= 70 ? "#166534" : pct >= 50 ? "#b45309" : "#dc2626"} />
+            <div style={{ marginTop: 20, display: "flex", gap: 12, justifyContent: "center" }}>
+              <button onClick={() => setPracticeState({ started: false, qIndex: 0, answers: {}, done: false, showResult: null })} style={{ background: "#0891b2", color: "#fff", border: "none", borderRadius: 10, padding: "12px 24px", fontWeight: 700, cursor: "pointer" }}>Try Again</button>
+            </div>
+          </div>
+
+          {PRACTICE_TEST_QUESTIONS.map((q, i) => {
+            const userAns = answers[q.id];
+            const isCorrect = Array.isArray(q.correct)
+              ? Array.isArray(userAns) && q.correct.every(c => userAns.includes(c)) && userAns.every(c => q.correct.includes(c))
+              : userAns === q.correct;
+            return (
+              <div key={q.id} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 20, marginBottom: 14 }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+                  <span style={{ fontWeight: 700, color: "#6b7280", fontSize: 13 }}>Q{i + 1}</span>
+                  <span>{isCorrect ? "✅" : "❌"}</span>
+                  <Badge color={CATEGORIES.find(c => c.id === q.cat)?.color}>{CATEGORIES.find(c => c.id === q.cat)?.label}</Badge>
+                  <Badge color="#6b7280">{q.type === "sata" ? "SATA" : "MCQ"}</Badge>
+                </div>
+                <p style={{ margin: "0 0 10px", fontSize: 14, color: "#374151", fontWeight: 500 }}>{q.stem}</p>
+                <div style={{ fontSize: 13, color: "#166534", marginBottom: 6 }}>
+                  <strong>Correct:</strong> {Array.isArray(q.correct) ? q.correct.map(c => q.options[c]).join(", ") : q.options[q.correct]}
+                </div>
+                <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#166534", lineHeight: 1.6 }}>
+                  <strong>💡 Rationale:</strong> {q.rationale}
+                </div>
+                <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8, padding: "8px 14px", marginTop: 8, fontSize: 12, color: "#1e40af" }}>
+                  <strong>🎯 Strategy:</strong> {q.strategy}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    if (!started) {
+      return (
+        <div style={{ maxWidth: 700, margin: "0 auto" }}>
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, padding: 36, textAlign: "center" }}>
+            <div style={{ fontSize: 60, marginBottom: 16 }}>📝</div>
+            <h2 style={{ margin: "0 0 12px", fontSize: 24, fontWeight: 800 }}>Full NCLEX Practice Test</h2>
+            <p style={{ color: "#6b7280", marginBottom: 24, lineHeight: 1.6 }}>
+              20 high-yield NCLEX questions including NGN-style SATA questions across all content areas. Full rationales and strategies provided after each question.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, maxWidth: 500, margin: "0 auto 28px" }}>
+              {[["📚", "20 Questions", "Mixed types"], ["🎯", "NGN Format", "SATA included"], ["💡", "Full Rationales", "With strategies"]].map(([icon, t, d]) => (
+                <div key={t} style={{ background: "#f9fafb", borderRadius: 10, padding: "14px 10px" }}>
+                  <div style={{ fontSize: 24 }}>{icon}</div>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>{t}</div>
+                  <div style={{ fontSize: 11, color: "#6b7280" }}>{d}</div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setPracticeState(s => ({ ...s, started: true }))} style={{ background: "linear-gradient(135deg, #7c3aed, #a855f7)", color: "#fff", border: "none", borderRadius: 12, padding: "16px 40px", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
+              Begin Practice Test →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const q = PRACTICE_TEST_QUESTIONS[qIndex];
+    const answered = practiceState.answers[q.id] !== undefined;
+    const isSATA = q.type === "sata";
+    const currentSATASelections = practiceState.answers[q.id] || (isSATA ? [] : undefined);
+
+    const handleMCQ = (i) => {
+      if (answered) return;
+      setPracticeState(s => ({ ...s, answers: { ...s.answers, [q.id]: i } }));
+    };
+
+    const handleSATA = (i) => {
+      if (answered) return;
+      const current = practiceState.answers[q.id] || [];
+      const newSel = current.includes(i) ? current.filter(x => x !== i) : [...current, i];
+      setPracticeState(s => ({ ...s, answers: { ...s.answers, [q.id]: newSel } }));
+    };
+
+    const submitSATA = () => {
+      if ((practiceState.answers[q.id] || []).length === 0) return;
+    };
+
+    return (
+      <div style={{ maxWidth: 700, margin: "0 auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>Question {qIndex + 1} of {PRACTICE_TEST_QUESTIONS.length}</div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Badge color={CATEGORIES.find(c => c.id === q.cat)?.color}>{CATEGORIES.find(c => c.id === q.cat)?.label}</Badge>
+            {isSATA && <Badge color="#7c3aed">SATA</Badge>}
+          </div>
+        </div>
+        <ProgressBar value={qIndex} max={PRACTICE_TEST_QUESTIONS.length} color="#7c3aed" />
+
+        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 28, marginTop: 16 }}>
+          {isSATA && <div style={{ background: "#fef9c3", border: "1px solid #fde047", borderRadius: 8, padding: "8px 14px", marginBottom: 16, fontSize: 13, color: "#854d0e", fontWeight: 600 }}>SELECT ALL THAT APPLY – Choose all correct options</div>}
+          <p style={{ fontSize: 16, fontWeight: 600, color: "#111827", lineHeight: 1.6, margin: "0 0 20px" }}>{q.stem}</p>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {q.options.map((opt, i) => {
+              let bg = "#f9fafb", border = "#e5e7eb", color = "#374151";
+              if (isSATA) {
+                const sel = (currentSATASelections || []).includes(i);
+                if (answered) {
+                  if (q.correct.includes(i)) { bg = "#f0fdf4"; border = "#22c55e"; color = "#166534"; }
+                  else if (sel) { bg = "#fef2f2"; border = "#ef4444"; color = "#dc2626"; }
+                } else if (sel) { bg = "#eff6ff"; border = "#3b82f6"; color = "#1e40af"; }
+              } else {
+                const sel = practiceState.answers[q.id] === i;
+                if (answered) {
+                  if (i === q.correct) { bg = "#f0fdf4"; border = "#22c55e"; color = "#166534"; }
+                  else if (sel) { bg = "#fef2f2"; border = "#ef4444"; color = "#dc2626"; }
+                } else if (sel) { bg = "#eff6ff"; border = "#3b82f6"; color = "#1e40af"; }
+              }
+
+              return (
+                <button key={i}
+                  disabled={answered && !isSATA}
+                  onClick={() => isSATA ? handleSATA(i) : handleMCQ(i)}
+                  style={{ background: bg, border: `2px solid ${border}`, borderRadius: 10, padding: "13px 16px", textAlign: "left", cursor: (answered && !isSATA) ? "default" : "pointer", color, fontWeight: 500, fontSize: 14, lineHeight: 1.5 }}>
+                  {isSATA && <span style={{ display: "inline-block", width: 18, height: 18, border: `2px solid ${border}`, borderRadius: 4, marginRight: 10, verticalAlign: "middle", background: (currentSATASelections || []).includes(i) && !answered ? "#3b82f6" : "transparent" }} />}
+                  {opt}
+                  {answered && isSATA && q.correct.includes(i) && <span style={{ float: "right" }}>✅</span>}
+                  {answered && isSATA && (currentSATASelections || []).includes(i) && !q.correct.includes(i) && <span style={{ float: "right" }}>❌</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {isSATA && !answered && (
+            <button onClick={() => {
+              if ((practiceState.answers[q.id] || []).length > 0) {
+                // Force "answered" state
+                setPracticeState(s => {
+                  const cur = s.answers[q.id] || [];
+                  return { ...s, answers: { ...s.answers, [q.id]: cur.length === 0 ? [-1] : cur } };
+                });
+              }
+            }} style={{ marginTop: 16, background: "#7c3aed", color: "#fff", border: "none", borderRadius: 10, padding: "12px 24px", fontWeight: 700, cursor: "pointer" }}>
+              Submit Answer
+            </button>
+          )}
+
+          {answered && (
+            <div style={{ marginTop: 20 }}>
+              <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: "14px 18px", marginBottom: 10, fontSize: 14, color: "#166534", lineHeight: 1.7 }}>
+                <strong>💡 Rationale:</strong> {q.rationale}
+              </div>
+              <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 10, padding: "12px 18px", fontSize: 13, color: "#1e40af" }}>
+                <strong>🎯 Strategy:</strong> {q.strategy}
+              </div>
+              <button onClick={() => {
+                if (qIndex < PRACTICE_TEST_QUESTIONS.length - 1) {
+                  setPracticeState(s => ({ ...s, qIndex: s.qIndex + 1 }));
+                } else {
+                  setPracticeState(s => ({ ...s, done: true }));
+                }
+              }} style={{ marginTop: 16, width: "100%", background: "#7c3aed", color: "#fff", border: "none", borderRadius: 10, padding: "14px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>
+                {qIndex < PRACTICE_TEST_QUESTIONS.length - 1 ? "Next Question →" : "See Final Results 🎉"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ── STRATEGY TAB ──────────────────────────────────────
+  const StrategyTab = () => (
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
+      <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}>🎯 NCLEX Strategies & Hacks</h2>
+      <p style={{ color: "#6b7280", margin: "0 0 24px" }}>Master test-taking strategies used by high-performing NCLEX candidates.</p>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, marginBottom: 24 }}>
+        {STRATEGY_CONTENT.map(s => (
+          <div key={s.title} style={{ background: "#fff", border: `1px solid ${s.color}33`, borderRadius: 16, padding: 22, borderLeft: `4px solid ${s.color}` }}>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+              <span style={{ fontSize: 24 }}>{s.icon}</span>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#111827" }}>{s.title}</h3>
+            </div>
+            <pre style={{ margin: 0, fontFamily: "inherit", fontSize: 13, color: "#374151", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{s.content}</pre>
+          </div>
+        ))}
+      </div>
+
+      {/* Priority Frameworks */}
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontSize: 18, fontWeight: 700 }}>🏆 Priority Frameworks (Memorize These)</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          {[
+            { title: "ABCs", items: ["Airway – always first", "Breathing – second priority", "Circulation – third", "Then: Disability/Neuro", "Then: Exposure/Environment"] },
+            { title: "Maslow's Hierarchy", items: ["1. Physiological (O2, food, water)", "2. Safety (fall, infection)", "3. Love/Belonging", "4. Esteem", "5. Self-Actualization"] },
+            { title: "Nursing Process", items: ["Assessment → FIRST step", "Diagnosis → SECOND", "Planning → THIRD", "Implementation → FOURTH", "Evaluation → LAST"] }
+          ].map(f => (
+            <div key={f.title} style={{ background: "#f9fafb", borderRadius: 12, padding: "16px 18px" }}>
+              <h4 style={{ margin: "0 0 10px", color: "#0891b2", fontWeight: 700 }}>{f.title}</h4>
+              <ol style={{ margin: 0, paddingLeft: 18 }}>
+                {f.items.map(i => <li key={i} style={{ fontSize: 13, color: "#374151", marginBottom: 4 }}>{i}</li>)}
+              </ol>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Memory Hacks */}
+      <div style={{ background: "linear-gradient(135deg, #1e1b4b, #312e81)", borderRadius: 16, padding: 24, color: "#fff" }}>
+        <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>🧠 Memory Hacks & Mnemonics</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          {[
+            ["SLUDGE (Cholinergic toxicity)", "Salivation, Lacrimation, Urination, Defecation, GI distress, Emesis"],
+            ["RACE (Fire safety)", "Rescue, Alarm, Contain, Extinguish/Evacuate"],
+            ["I WATCH DEATH (Delirium)", "Infections, Withdrawal, Acute metabolic, Trauma, CNS, Hypoxia, Deficiencies, Endocrine, Acute vascular, Toxins, Heavy metals"],
+            ["FAST (Stroke)", "Face drooping, Arm weakness, Speech difficulty, Time to call 911"],
+            ["PQRST (Pain assessment)", "Provocation, Quality, Radiation, Severity, Timing"],
+            ["OLDCARTS (HPI)", "Onset, Location, Duration, Character, Aggravating, Relieving, Timing, Severity"],
+            ["MUDPILES (Anion gap metabolic acidosis)", "Methanol, Uremia, DKA, Propylene glycol, Isoniazid/Iron, Lactic acidosis, Ethylene glycol, Salicylates"],
+            ["AEIOU TIPS (Altered LOC)", "Alcohol, Epilepsy, Insulin, Overdose, Uremia | Trauma, Infection, Psychiatric, Stroke/Shock"]
+          ].map(([title, desc]) => (
+            <div key={title} style={{ background: "rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px" }}>
+              <div style={{ fontWeight: 700, color: "#c4b5fd", marginBottom: 4, fontSize: 13 }}>{title}</div>
+              <div style={{ fontSize: 12, color: "#e0e7ff", lineHeight: 1.6 }}>{desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── PLAN TAB ─────────────────────────────────────────
+  const PlanTab = () => {
+    const area = weakArea || "pharma";
+    const catName = CATEGORIES.find(c => c.id === area)?.label || "Pharmacology";
+    const plan = WEEKLY_PLAN.weak[area] || WEEKLY_PLAN.weak.pharma;
+
+    const allWeeks = [
+      { week: 1, theme: "Foundation + Diagnostics + Weak Area Deep Dive", color: "#0891b2" },
+      { week: 2, theme: "High-Yield Areas: Cardio, Neuro, Respiratory", color: "#7c3aed" },
+      { week: 3, theme: "Pharmacology Mastery + Psych + OB", color: "#dc2626" },
+      { week: 4, theme: "NCLEX Exam Simulation + Final Review", color: "#166534" }
+    ];
+
+    return (
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <h2 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800 }}>📅 Your Personalized Study Plan</h2>
+        <p style={{ color: "#6b7280", margin: "0 0 20px" }}>
+          {weakArea ? `Based on your diagnostic results, your focus area is: ` : "Suggested 4-week plan: "}
+          {weakArea && <strong style={{ color: CATEGORIES.find(c => c.id === area)?.color }}>{catName}</strong>}
+        </p>
+
+        {!weakArea && (
+          <div style={{ background: "#fef9c3", border: "1px solid #fde047", borderRadius: 12, padding: 14, marginBottom: 20, fontSize: 14, color: "#713f12" }}>
+            💡 Take the <button onClick={() => setTab("diag")} style={{ background: "none", border: "none", color: "#0891b2", fontWeight: 700, cursor: "pointer", fontSize: 14, padding: 0 }}>Diagnostic Test</button> first to get a plan customized to YOUR weak areas!
+          </div>
+        )}
+
+        {/* 4-Week Overview */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
+          {allWeeks.map(w => (
+            <div key={w.week} style={{ background: "#fff", border: `2px solid ${w.color}33`, borderRadius: 14, padding: "16px 14px", textAlign: "center", borderTop: `4px solid ${w.color}` }}>
+              <div style={{ fontWeight: 800, fontSize: 20, color: w.color }}>Week {w.week}</div>
+              <div style={{ fontSize: 12, color: "#6b7280", marginTop: 6, lineHeight: 1.5 }}>{w.theme}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Week 1 Detailed Plan */}
+        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
+          <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: "#0891b2" }}>📋 Week 1: Detailed Daily Plan</h3>
+          <p style={{ color: "#6b7280", margin: "0 0 18px", fontSize: 14 }}>Focused on <strong>{catName}</strong> + Foundation building</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {plan.map((day, i) => (
+              <div key={day.day} style={{ display: "flex", gap: 16, padding: "16px 18px", background: "#f9fafb", borderRadius: 12, border: "1px solid #e5e7eb", alignItems: "flex-start" }}>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: i === 6 ? "#f3f4f6" : "#0891b2", color: i === 6 ? "#6b7280" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>
+                  {day.day}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", marginBottom: 6 }}>{day.focus}</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {day.tasks.map(t => (
+                      <span key={t} style={{ background: "#e0f2fe", color: "#0369a1", borderRadius: 6, padding: "3px 8px", fontSize: 12 }}>✓ {t}</span>
+                    ))}
+                  </div>
+                </div>
+                <Badge color={i === 6 ? "#6b7280" : "#0891b2"}>{day.hours}h</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Weeks 2-4 */}
+        {[
+          {
+            week: 2, color: "#7c3aed",
+            days: [
+              { day: "Mon", focus: "Cardiac: MI, Angina, CHF, Heart failure management", hours: 4 },
+              { day: "Tue", focus: "Respiratory: COPD, Asthma, Pneumonia, ARDS, ventilator care", hours: 4 },
+              { day: "Wed", focus: "Neurological: Stroke, increased ICP, spinal cord injury, seizures", hours: 4 },
+              { day: "Thu", focus: "Endocrine: Diabetes (DKA/HHS), thyroid disorders, adrenal disorders", hours: 4 },
+              { day: "Fri", focus: "Full 85-question NCLEX practice test", hours: 5 },
+              { day: "Sat", focus: "Review all missed questions + targeted content review", hours: 5 },
+              { day: "Sun", focus: "Rest + Concept mapping for weak areas", hours: 1 }
+            ]
+          },
+          {
+            week: 3, color: "#dc2626",
+            days: [
+              { day: "Mon", focus: "Psychiatric disorders: Schizophrenia, bipolar, depression, anxiety", hours: 4 },
+              { day: "Tue", focus: "Obstetrics & Gynecology: Normal pregnancy, complications, postpartum", hours: 4 },
+              { day: "Wed", focus: "Pediatrics: Growth/development, pediatric emergencies, immunizations", hours: 4 },
+              { day: "Thu", focus: "Management, Delegation, Legal/Ethical, Prioritization", hours: 4 },
+              { day: "Fri", focus: "Full 85-question NCLEX practice test", hours: 5 },
+              { day: "Sat", focus: "NGN question types practice (bow-tie, matrix, trend)", hours: 5 },
+              { day: "Sun", focus: "Rest + Final concept review", hours: 1 }
+            ]
+          },
+          {
+            week: 4, color: "#166534",
+            days: [
+              { day: "Mon", focus: "150-question NCLEX simulation (timed: 5 hours)", hours: 5 },
+              { day: "Tue", focus: "Review all incorrect answers + weak category reinforcement", hours: 4 },
+              { day: "Wed", focus: "High-yield pharmacology final review + lab values quiz", hours: 4 },
+              { day: "Thu", focus: "150-question NCLEX final simulation", hours: 5 },
+              { day: "Fri", focus: "Light review only: strategies, mnemonics, lab values", hours: 2 },
+              { day: "Sat", focus: "EXAM DAY PREP: Rest, organize materials, early bedtime", hours: 1 },
+              { day: "Sun", focus: "🎓 NCLEX EXAM DAY – You've got this!", hours: 0 }
+            ]
+          }
+        ].map(w => (
+          <div key={w.week} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 22, marginBottom: 16 }}>
+            <h3 style={{ margin: "0 0 14px", fontSize: 16, fontWeight: 700, color: w.color }}>Week {w.week}</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {w.days.map((d, i) => (
+                <div key={d.day} style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 14px", background: "#f9fafb", borderRadius: 8 }}>
+                  <div style={{ width: 38, fontWeight: 800, fontSize: 12, color: i === 6 ? "#9ca3af" : w.color }}>{d.day}</div>
+                  <div style={{ flex: 1, fontSize: 13, color: "#374151" }}>{d.focus}</div>
+                  {d.hours > 0 && <Badge color={w.color}>{d.hours}h</Badge>}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Resources */}
+        <div style={{ background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)", border: "1px solid #bae6fd", borderRadius: 16, padding: 22 }}>
+          <h3 style={{ margin: "0 0 14px", color: "#0c4a6e", fontWeight: 700 }}>📚 Recommended Resources</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {[
+              ["UWorld NCLEX-RN Qbank", "Gold standard – aim for 60%+ average", "#0891b2"],
+              ["Saunders Comprehensive Review", "Best content review book", "#166534"],
+              ["Mark Klimek Audio Reviews", "Free on YouTube – highly effective", "#7c3aed"],
+              ["Archer Review", "High-yield and budget-friendly", "#b45309"],
+              ["NCSBN Learning Extension", "Official NCLEX prep from makers", "#dc2626"],
+              ["Simple Nursing YouTube", "Visual learners – excellent explanations", "#0d9488"]
+            ].map(([name, desc, color]) => (
+              <div key={name} style={{ background: "#fff", borderRadius: 10, padding: "12px 14px", border: `1px solid ${color}22` }}>
+                <div style={{ fontWeight: 700, fontSize: 14, color }}>{name}</div>
+                <div style={{ fontSize: 12, color: "#6b7280", marginTop: 3 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── CALIFORNIA TAB ────────────────────────────────────
+  const CaliforniaTab = () => (
+    <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <div style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a, #fbbf24)", borderRadius: 18, padding: "28px 30px", marginBottom: 24, color: "#78350f" }}>
+        <div style={{ fontSize: 40, marginBottom: 8 }}>🌅</div>
+        <h2 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800 }}>California BRN Licensing Guide</h2>
+        <p style={{ margin: 0, fontSize: 15, opacity: 0.85 }}>Complete step-by-step guide to getting your California RN license after passing NCLEX</p>
+      </div>
+
+      {/* Steps */}
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontWeight: 700 }}>📋 Application Process (Step-by-Step)</h3>
+        {[
+          { step: 1, title: "Apply to California BRN", desc: "Submit application at breeze.ca.gov (California's online licensing system). Application fee: ~$100-150. Includes personal information, nursing program information, background disclosure.", time: "Day 1", color: "#0891b2" },
+          { step: 2, title: "Fingerprinting (LiveScan)", desc: "Get fingerprinted at a DOJ-approved LiveScan site in California. Fee: ~$50-90. Must submit fingerprints to both DOJ and FBI. Results sent directly to BRN.", time: "Day 1-3", color: "#7c3aed" },
+          { step: 3, title: "Official Transcripts", desc: "Your nursing school must send official transcripts DIRECTLY to BRN. Electronic preferred. Processing faster than mail. Confirm your school has sent them.", time: "Week 1-2", color: "#dc2626" },
+          { step: 4, title: "BRN Reviews Application", desc: "BRN verifies all submitted materials. If anything is missing, they'll send a deficiency notice. Check breeze.ca.gov regularly for status updates.", time: "Week 3-6", color: "#b45309" },
+          { step: 5, title: "Register with Pearson VUE / NCSBN", desc: "Create an account at ncsbn.org. Pay NCLEX registration fee ($200). NCSBN will notify Pearson VUE after your application is approved.", time: "Parallel", color: "#166534" },
+          { step: 6, title: "Receive ATT (Authorization to Test)", desc: "ATT emailed from Pearson VUE once both BRN approval and NCSBN registration are complete. ATT is valid for 90 days – SCHEDULE QUICKLY.", time: "After approval", color: "#0e7490" },
+          { step: 7, title: "Schedule & Take NCLEX", desc: "Schedule at pearsonvue.com/nclex. Choose a California Pearson VUE testing center. Bring valid ID. You'll know you passed when the computer stops at a lower question count.", time: "Within 90 days", color: "#0891b2" },
+          { step: 8, title: "License Verification", desc: "Quick Results available within 48 hours via Pearson VUE ($8). Official BRN license appears at breeze.ca.gov within 1-2 weeks. Your CA RN license number will begin with 'RN.'", time: "48 hrs post-exam", color: "#7c3aed" }
+        ].map(s => (
+          <div key={s.step} style={{ display: "flex", gap: 16, marginBottom: 18, alignItems: "flex-start" }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: s.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 15, flexShrink: 0 }}>{s.step}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                <span style={{ fontWeight: 700, fontSize: 15 }}>{s.title}</span>
+                <Badge color={s.color}>{s.time}</Badge>
+              </div>
+              <p style={{ margin: 0, fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>{s.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Important Notes */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+        <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 14, padding: 20 }}>
+          <h4 style={{ margin: "0 0 12px", color: "#dc2626", fontWeight: 700 }}>⚠️ Common Pitfalls</h4>
+          <ul style={{ margin: 0, paddingLeft: 18, color: "#7f1d1d", fontSize: 13, lineHeight: 2 }}>
+            <li>Not checking BRN status regularly</li>
+            <li>Forgetting to have school send transcripts</li>
+            <li>Waiting too long to schedule after ATT</li>
+            <li>ATT expires if not used in 90 days</li>
+            <li>Criminal history issues – disclose everything</li>
+            <li>Not registering with NCSBN in parallel</li>
+          </ul>
+        </div>
+        <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 14, padding: 20 }}>
+          <h4 style={{ margin: "0 0 12px", color: "#166534", fontWeight: 700 }}>✅ Fast-Track Tips</h4>
+          <ul style={{ margin: 0, paddingLeft: 18, color: "#14532d", fontSize: 13, lineHeight: 2 }}>
+            <li>Submit all materials simultaneously</li>
+            <li>Use electronic transcript submission</li>
+            <li>Register with NCSBN on day 1</li>
+            <li>Complete LiveScan within first week</li>
+            <li>Check breeze.ca.gov every 3-5 days</li>
+            <li>Schedule NCLEX as soon as ATT arrives</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* CA-Specific Requirements */}
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 22 }}>
+        <h4 style={{ margin: "0 0 12px", fontWeight: 700 }}>🏛️ California-Specific Requirements</h4>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {[
+            ["CE Requirements for Renewal", "30 hours continuing education every 2 years. Includes mandatory child abuse reporting, domestic violence. License renews every 2 years."],
+            ["English Language Competency", "Required for licensure. Foreign graduates may need additional documentation."],
+            ["Background Check", "Criminal background check required. Some criminal history may delay or prevent licensure – consult BRN directly."],
+            ["Social Security Number", "Required for CA licensing. ITIN may be accepted with additional documentation."],
+            ["Nursing Program Accreditation", "Program must be approved by BRN or equivalent. NLNAC/ACEN or CCNE accreditation preferred."],
+            ["International Nurse Graduates (ING)", "Additional requirements: credential evaluation, English proficiency, possible additional coursework. Contact BRN ING unit."]
+          ].map(([title, desc]) => (
+            <div key={title} style={{ padding: "12px 14px", background: "#f9fafb", borderRadius: 10 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", marginBottom: 4 }}>{title}</div>
+              <div style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>{desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── NGN TAB ───────────────────────────────────────────
+  const NGNTab = () => (
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
+      <div style={{ background: "linear-gradient(135deg, #1e1b4b, #4c1d95, #6d28d9)", borderRadius: 18, padding: "28px 30px", marginBottom: 24, color: "#fff" }}>
+        <div style={{ fontSize: 40, marginBottom: 8 }}>🧠</div>
+        <h2 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800 }}>Next Generation NCLEX (NGN) Guide</h2>
+        <p style={{ margin: 0, fontSize: 15, opacity: 0.9 }}>Master the new Clinical Judgment question formats introduced in April 2023</p>
+      </div>
+
+      {/* Clinical Judgment Model */}
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontWeight: 700, fontSize: 18 }}>🔬 Clinical Judgment Measurement Model (CJMM)</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 20 }}>
+          {[
+            { num: 1, title: "Recognize Cues", desc: "Filter relevant from irrelevant information. What is abnormal? What has changed?", color: "#0891b2" },
+            { num: 2, title: "Analyze Cues", desc: "Connect cues to clinical conditions. What do these findings mean together?", color: "#7c3aed" },
+            { num: 3, title: "Prioritize Hypotheses", desc: "Rank potential conditions by urgency and likelihood. What's most dangerous?", color: "#dc2626" },
+            { num: 4, title: "Generate Solutions", desc: "Identify evidence-based interventions for each hypothesis. What are the options?", color: "#b45309" },
+            { num: 5, title: "Take Actions", desc: "Implement interventions in priority order. What do I do first?", color: "#166534" },
+            { num: 6, title: "Evaluate Outcomes", desc: "Assess client response to interventions. Is the client improving or deteriorating?", color: "#0e7490" }
+          ].map(s => (
+            <div key={s.num} style={{ background: "#f9fafb", borderRadius: 12, padding: "16px 14px", borderTop: `3px solid ${s.color}` }}>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: s.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, marginBottom: 8 }}>{s.num}</div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: "#111827", marginBottom: 6 }}>{s.title}</div>
+              <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.6 }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* NGN Question Types */}
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 18px", fontWeight: 700 }}>📝 NGN Question Types & How to Answer Them</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {NGNTIPS.map(t => (
+            <div key={t.type} style={{ display: "flex", gap: 16, padding: "16px 18px", background: "#f9fafb", borderRadius: 12, borderLeft: `4px solid ${t.color}` }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 15, color: "#111827", marginBottom: 6 }}>{t.type}</div>
+                <div style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.7 }}>{t.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sample Bow-tie */}
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, marginBottom: 20 }}>
+        <h3 style={{ margin: "0 0 6px", fontWeight: 700 }}>🦋 Sample Bow-Tie Question</h3>
+        <p style={{ color: "#6b7280", fontSize: 13, margin: "0 0 18px" }}>Bow-tie questions ask you to identify the condition, causes, and nursing actions simultaneously</p>
+
+        <div style={{ background: "#f0f9ff", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+          <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 14 }}>
+            A 68-year-old client is admitted with reports of sudden-onset dyspnea. VS: BP 88/52, HR 126, RR 28, SpO2 84% on room air. The client is diaphoretic and using accessory muscles. Lung sounds reveal bilateral crackles.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 12, alignItems: "start" }}>
+          <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 10, padding: 14 }}>
+            <div style={{ fontWeight: 700, color: "#dc2626", fontSize: 12, marginBottom: 8 }}>POTENTIAL CONDITIONS (causes)</div>
+            {["Acute pulmonary edema", "Pneumothorax", "Pulmonary embolism"].map((c, i) => (
+              <div key={c} style={{ padding: "8px 10px", background: i === 0 ? "#dc262622" : "#fff", borderRadius: 6, marginBottom: 6, fontSize: 13, border: i === 0 ? "1px solid #dc2626" : "1px solid #e5e7eb", color: i === 0 ? "#dc2626" : "#374151", fontWeight: i === 0 ? 700 : 400 }}>
+                {i === 0 && "✅ "}{c}
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: "center", paddingTop: 40 }}>
+            <div style={{ background: "#111827", color: "#fff", borderRadius: 10, padding: "10px 14px", fontWeight: 700, fontSize: 13 }}>Priority Condition</div>
+            <div style={{ fontSize: 22, margin: "8px 0" }}>🦋</div>
+            <div style={{ background: "#0891b2", color: "#fff", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 600 }}>Acute Pulmonary Edema / Cardiogenic Shock</div>
+          </div>
+          <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10, padding: 14 }}>
+            <div style={{ fontWeight: 700, color: "#166534", fontSize: 12, marginBottom: 8 }}>NURSING ACTIONS</div>
+            {["Elevate HOB, apply high-flow O2", "Administer IV furosemide as ordered", "Prepare for possible intubation", "Insert urinary catheter for I&O"].map((a, i) => (
+              <div key={a} style={{ padding: "8px 10px", background: "#f0fdf4", borderRadius: 6, marginBottom: 6, fontSize: 13, border: "1px solid #bbf7d0", color: "#166534" }}>
+                ✓ {a}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Scoring */}
+      <div style={{ background: "linear-gradient(135deg, #1e1b4b, #312e81)", borderRadius: 14, padding: 22, color: "#fff" }}>
+        <h3 style={{ margin: "0 0 14px", fontWeight: 700 }}>📊 NGN Scoring & Passing Standard</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          {[
+            ["Partial Credit Scoring", "NGN uses partial credit for multi-part items. Getting 3 of 6 options correct = partial score. NOT all-or-nothing like traditional SATA."],
+            ["Adaptive Testing", "Still uses CAT (Computer Adaptive Testing). Minimum 85, maximum 150 questions. Exam stops when pass/fail is determined with 95% confidence."],
+            ["Passing Standard", "NCSBN sets the logit-based passing standard. As of 2023 NGN launch, passing standard maintained similar difficulty levels to previous format."],
+            ["Standalone vs Case Study", "Standalone: 1 scenario, 1 question. Unfolding case study: same client, 6 questions tracking clinical progression over time. New with NGN."]
+          ].map(([t, d]) => (
+            <div key={t} style={{ background: "rgba(255,255,255,0.1)", borderRadius: 10, padding: 14 }}>
+              <div style={{ fontWeight: 700, color: "#c4b5fd", marginBottom: 6, fontSize: 13 }}>{t}</div>
+              <div style={{ fontSize: 12, color: "#e0e7ff", lineHeight: 1.7 }}>{d}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── TAB NAVIGATION ────────────────────────────────────
+  const TABS = [
+    { id: "home", label: "🏠 Home" },
+    { id: "diag", label: "🔬 Diagnostic" },
+    { id: "practice", label: "📝 Practice" },
+    { id: "strategy", label: "🎯 Strategies" },
+    { id: "plan", label: "📅 Study Plan" },
+    { id: "california", label: "🌅 California" },
+    { id: "ngn", label: "🧠 NGN Guide" }
+  ];
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+      {/* Top Bar */}
+      <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 16px" }}>
+          <div style={{ display: "flex", alignItems: "center", overflowX: "auto", gap: 2, padding: "12px 0" }}>
+            {TABS.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)}
+                style={{ padding: "8px 14px", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: tab === t.id ? 700 : 500, fontSize: 13, whiteSpace: "nowrap", background: tab === t.id ? "#0891b2" : "transparent", color: tab === t.id ? "#fff" : "#6b7280", transition: "all 0.15s" }}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 16px 60px" }}>
+        {tab === "home" && <HomeTab />}
+        {tab === "diag" && <DiagTab />}
+        {tab === "practice" && <PracticeTab />}
+        {tab === "strategy" && <StrategyTab />}
+        {tab === "plan" && <PlanTab />}
+        {tab === "california" && <CaliforniaTab />}
+        {tab === "ngn" && <NGNTab />}
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<NCLEXPrep />);
+</script>
+</body>
+</html>
