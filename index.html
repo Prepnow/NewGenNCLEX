@@ -1052,31 +1052,18 @@ Post-test: No Quick Results for 48 hours. If you got 85 questions, that means ei
 
 // ─── SETTINGS ────────────────────────────────────────────────────────────────
 function Settings({ apiKey, setApiKey }) {
-  const [key, setKey] = useState(apiKey);
-  const [saved, setSaved] = useState(false);
   const clearAll=()=>{
     if(!window.confirm('Clear all test history, saved questions, and notes? This cannot be undone.'))return;
-    ['nclex_sessions','nclex_saved_q','nclex_notes','nclex_key'].forEach(k=>S.del(k));
+    ['nclex_sessions','nclex_saved_q','nclex_notes','nclex_key','nclex_weak_area'].forEach(k=>S.del(k));
     window.location.reload();
   };
   return (
     <div style={{maxWidth:560,margin:'0 auto',padding:'32px 24px'}} className="fade-in">
       <h2 style={{fontSize:19,marginBottom:22}}>Settings</h2>
-      <div className="card" style={{padding:22,marginBottom:16}}>
-        <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:12}}>Anthropic API Key</div>
-        <div style={{display:'flex',gap:10,marginBottom:8}}>
-          <input type="password" value={key} onChange={e=>{setKey(e.target.value);setSaved(false);}} placeholder="sk-ant-..."
-            style={{flex:1,padding:'9px 12px',border:'1px solid var(--border)',borderRadius:6,fontSize:13,color:'var(--navy)',outline:'none'}} />
-          <button className="btn btn-navy" onClick={()=>{S.set('nclex_key',key);setApiKey(key);setSaved(true);}}>{saved?'Saved!':'Save'}</button>
-        </div>
-        <div style={{fontSize:11,color:'var(--text3)',lineHeight:1.6}}>
-          Stored in your browser's localStorage. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Set a monthly spend limit to cap costs.
-        </div>
-      </div>
       <div className="card" style={{padding:22}}>
-        <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:8}}>Clear All Data</div>
-        <p style={{fontSize:13,color:'var(--text2)',marginBottom:14,lineHeight:1.6}}>Removes all session history, saved questions, and notes from this browser.</p>
-        <button className="btn btn-danger" onClick={clearAll}>Clear All Data</button>
+        <div style={{fontSize:13,fontWeight:700,color:'var(--navy)',marginBottom:8}}>Reset Progress</div>
+        <p style={{fontSize:13,color:'var(--text2)',marginBottom:14,lineHeight:1.6}}>Clears all test history, saved questions, notes, and diagnostic results from this browser. Use this to start fresh.</p>
+        <button className="btn btn-danger" onClick={clearAll}>Reset Progress</button>
       </div>
     </div>
   );
